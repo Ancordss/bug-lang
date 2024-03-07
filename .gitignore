@@ -1,2 +1,5 @@
 poetry.lock
 ./poetry.lock
+__pycache__
+buglang.txt
+
