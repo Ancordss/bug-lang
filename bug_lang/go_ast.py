@@ -1,5 +1,5 @@
 '''
-cast.py
+go_ast.py
 
 Estructura del árbol de síntaxis abstracto
 '''

@@ -1,6 +1,7 @@
 # cinterp.py
 '''
 Tree-walking interpreter
+TODO:here we need to convert all to go code
 '''
 from collections import ChainMap
 from bug_lang.go_ast    import *
@@ -10,20 +11,13 @@ from bug_lang.utils.stdlib import *
 
 import math
 
-# Veracidad en MiniC
-def _is_truthy(value):
-	if isinstance(value, bool): #If the object is already a boolean
-		return value
-	elif value is None: # if the object is empty
-		return False
-	else:
-		return True #if the object is not empty
+
 
 class ReturnException(Exception):
 	def __init__(self, value):
 		self.value = value	#it sets the value for exception
 
-class MiniCExit(BaseException):
+class BugLangExit(BaseException):
 	pass
 """
 class CallError(Exception):
@@ -126,7 +120,7 @@ class Interpreter(Visitor): #This is a visitor
 
 	def error(self, position, message):
 		self.ctxt.error(position, message)
-		raise MiniCExit()
+		raise BugLangExit()
 
 	# Punto de entrada alto-nivel
 	def interpret(self, node):
@@ -138,7 +132,7 @@ class Interpreter(Visitor): #This is a visitor
 				#print("\nInterpreting finished")
 			else:
 				print("\n The interpreter could not start because the Checker returned errors")
-		except MiniCExit as e:
+		except BugLangExit as e:
 			pass
 
 
@@ -161,7 +155,7 @@ class Interpreter(Visitor): #This is a visitor
 		self.env[node.name] = expr
 
 	def visit(self, node: Print):
-		print(self.visit(node.expr))
+		{self.visit(node.expr)}
 
 
 	def visit(self, node: Literal):
