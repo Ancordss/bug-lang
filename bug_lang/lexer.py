@@ -138,7 +138,7 @@ class Lexer(sly.Lexer):
 
     IDENT = r'[a-zA-Z_][a-zA-Z0-9_]*'
     # IDENT['fun']    = FUN
-    IDENT['var']    = VAR
+    IDENT['bee']    = VAR
     IDENT['print']  = PRINT
     # IDENT['if']     = IF
     # IDENT['else']   = ELSE

@@ -156,6 +156,7 @@ class Interpreter(Visitor): #This is a visitor
 
 	def visit(self, node: Print):
 		{self.visit(node.expr)}
+		print(f"{self.visit(node.expr)}")
 
 
 	def visit(self, node: Literal):

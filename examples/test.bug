@@ -1,4 +1,4 @@
 // print
 
-var a="hola";
+bee a="hola";
 print(a);
