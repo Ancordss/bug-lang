@@ -4,7 +4,7 @@ import sly
 from bug_lang.go_ast import *
 
 class Parser(sly.Parser):
-    debugfile="minic.txt"
+    debugfile="buglang.txt"
     # La lista de tokens se copia desde Lexer
     tokens = Lexer.tokens
 
