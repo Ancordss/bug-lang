@@ -46,3 +46,18 @@ Replace `<task-name>` with the name of the task you want to run.
 ### License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
+
+### Grammar
+
+- bee = var *
+- silk = string
+- ant = int
+- flutter = float
+- beetle = bool
+- spider = if *
+- web = else *
+- fly = for *
+- looper = while *
+- spray = print *
+- flick = fun *
+

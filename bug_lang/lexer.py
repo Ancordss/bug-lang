@@ -73,15 +73,21 @@ class Lexer(sly.Lexer):
     # Definición de Símbolos
     tokens = {
         # Palabras reservadas
-        VAR, PRINT,
+        FUN, VAR, PRINT, IF, ELSE, WHILE, RETURN, TRUE, FALSE,
+        CLASS, FOR, WHILE, TRUE, NIL, THIS, SUPER,
 
         # Operadores de Relacion (long-2)
-        SEMI, ASSIGN, LPAREN,
-        RPAREN,
+        PLUS, MINUS, TIMES, DIVIDE, POINT, SEMI, COMMA, LPAREN,
+        RPAREN, LBRACE, RBRACE, LT, LE, GT, GE,
+        EQ, NE, AND, OR, NOT, ASSIGN, MODULE, END_IF,
         #LSQBRA, RSQBRA,
 
         # Otros tokens
-        IDENT, NUM, REAL, STRING
+        IDENT, NUM, REAL, STRING,
+
+        ADDEQ, MINEQ, TIMESEQ, DIVIDEEQ, MODULEEQ,
+
+        PLUSPLUS, MINUSMINUS, CONTINUE, BREAK
     }
     literals = '+-*/%=(){}[];,'
 
@@ -104,57 +110,57 @@ class Lexer(sly.Lexer):
         self.lineno += 1
 
     # Definicion de Tokens a traves de regexp
-    # PLUSPLUS = r'\+\+'
-    # ADDEQ = r'\+='
-    # PLUS = r'\+'
-    # MINUSMINUS = r'--'
-    # MINEQ =  r'-='
-    # MINUS =r'-'
-    # TIMESEQ =  r'\*='
-    # TIMES =r'\*'
-    # DIVIDEEQ =  r'/='
-    # DIVIDE =r'/'
-    #POINT =r'\.'
+    PLUSPLUS = r'\+\+'
+    ADDEQ = r'\+='
+    PLUS = r'\+'
+    MINUSMINUS = r'--'
+    MINEQ =  r'-='
+    MINUS =r'-'
+    TIMESEQ =  r'\*='
+    TIMES =r'\*'
+    DIVIDEEQ =  r'/='
+    DIVIDE =r'/'
+    POINT =r'\.'
     SEMI =r';'
-    # COMMA =r','
+    COMMA =r','
     LPAREN =r'\('
     RPAREN =r'\)'
-    # LBRACE =r'{'
-    # RBRACE =r'}'
-    #LSQBRA =r'\[' =def
-    #RSQBRA =r'\]' =def
-    # LE  = r'<='
-    # LT  = r'<'
-    # GE  = r'>='
-    # GT  = r'>'
-    # EQ  = r'=='
-    # NE  = r'!='
-    # AND = r'&&'
-    # OR  = r'\|\|'
-    # NOT = r'!'
+    LBRACE =r'{'
+    RBRACE =r'}'
+    #LSQBRA =r'\['
+    #RSQBRA =r'\]'
+    LE  = r'<='
+    LT  = r'<'
+    GE  = r'>='
+    GT  = r'>'
+    EQ  = r'=='
+    NE  = r'!='
+    AND = r'&&'
+    OR  = r'\|\|'
+    NOT = r'!'
     ASSIGN=r'='
-    # MODULEEQ =  r'%='
-    # MODULE=r'%'
+    MODULEEQ =  r'%='
+    MODULE=r'%'
 
     IDENT = r'[a-zA-Z_][a-zA-Z0-9_]*'
-    # IDENT['fun']    = FUN
+    IDENT['flick']    = FUN
     IDENT['bee']    = VAR
-    IDENT['print']  = PRINT
-    # IDENT['if']     = IF
-    # IDENT['else']   = ELSE
+    IDENT['spray']  = PRINT
+    IDENT['spider']     = IF
+    IDENT['web']   = ELSE
+    IDENT['looper']  = WHILE
+    IDENT['return'] = RETURN
+    IDENT['true']   = TRUE
+    IDENT['false']  = FALSE
+    IDENT['class']  = CLASS
+    IDENT['fly']  = FOR
     # IDENT['while']  = WHILE
-    # IDENT['return'] = RETURN
-    # IDENT['true']   = TRUE
-    # IDENT['false']  = FALSE
-    # IDENT['class']  = CLASS
-    # IDENT['for']  = FOR
-    # IDENT['while']  = WHILE
-    # IDENT['nil']  = NIL
-    # IDENT['this']  = THIS
-    # IDENT['super']  = SUPER
-    # IDENT['end_if'] = END_IF
-    # IDENT['continue'] = CONTINUE
-    # IDENT['break'] = BREAK
+    IDENT['nil']  = NIL
+    IDENT['this']  = THIS
+    IDENT['super']  = SUPER
+    IDENT['end_spider'] = END_IF
+    IDENT['continue'] = CONTINUE
+    IDENT['break'] = BREAK
 
     @_(r'".*"')
     def STRING(self, t):

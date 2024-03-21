@@ -13,11 +13,19 @@ import math
 
 
 
+def _is_truthy(value):
+	if isinstance(value, bool): #If the object is already a boolean
+		return value
+	elif value is None: # if the object is empty
+		return False
+	else:
+		return True #if the object is not empty
+
 class ReturnException(Exception):
 	def __init__(self, value):
 		self.value = value	#it sets the value for exception
 
-class BugLangExit(BaseException):
+class MiniCExit(BaseException):
 	pass
 """
 class CallError(Exception):
@@ -120,7 +128,7 @@ class Interpreter(Visitor): #This is a visitor
 
 	def error(self, position, message):
 		self.ctxt.error(position, message)
-		raise BugLangExit()
+		raise MiniCExit()
 
 	# Punto de entrada alto-nivel
 	def interpret(self, node):
@@ -132,9 +140,19 @@ class Interpreter(Visitor): #This is a visitor
 				#print("\nInterpreting finished")
 			else:
 				print("\n The interpreter could not start because the Checker returned errors")
-		except BugLangExit as e:
+		except MiniCExit as e:
 			pass
 
+	def visit(self, node: Block):
+		#self.env = self.env.new_child() #think about it as a typewriter, it advances one row
+		#and then you have to reset the pointer
+		for stmt in node.stmts:
+			self.visit(stmt)
+			if ThereIsBreak:
+				return 0
+			if ThereIsContinue:
+				return 1
+		#self.env = self.env.parents		#you "reset" the pointer
 
 	def visit(self, node: Program):
 		#self.env = self.env.new_child()
@@ -146,6 +164,24 @@ class Interpreter(Visitor): #This is a visitor
 			self.visit(d)
 		#self.env = self.env.parents
 
+	def visit(self, node: ClassDeclaration):
+		if node.sclass:
+			sclass = self.visit(node.sclass)
+			env = self.env.new_child()
+			env['super'] = sclass			#we accommodate this framework for any User-made class
+		else:
+			sclass = None
+			env = self.env
+		methods = { }
+		for meth in node.methods:
+			methods[meth.name] = Function(meth, env)
+		cls = Class(node.name, sclass, methods)
+		self.env[node.name] = cls
+
+	def visit(self, node: FuncDeclaration):
+
+		func = Function(node, self.env)
+		self.env[node.name] = func
 
 	def visit(self, node: VarDeclaration):
 		if node.expr:
@@ -155,13 +191,125 @@ class Interpreter(Visitor): #This is a visitor
 		self.env[node.name] = expr
 
 	def visit(self, node: Print):
-		{self.visit(node.expr)}
-		print(f"{self.visit(node.expr)}")
+		print(self.visit(node.expr))
 
+	def visit(self, node: WhileStmt):
+		global ThereIsContinue
+		global ThereIsBreak
+
+		while _is_truthy(self.visit(node.cond)):
+			ThereIsContinue = False
+			ThereIsBreak = False
+			#Something will return from Block
+			flowControl = self.visit(node.body)
+			if flowControl == 0:
+				break
+			elif flowControl == 1:
+				continue
+			else:
+				pass
+
+##########################################################
+	def visit(self, node: Continue):
+		global ThereIsContinue
+		ThereIsContinue = True
+
+	def visit(self, node: Break):
+		global ThereIsBreak
+		ThereIsBreak = True
+#########################################################
+
+	def visit(self, node: ForStmt):
+		global ThereIsContinue
+		global ThereIsBreak
+
+		self.visit(node.for_init)
+		while _is_truthy(self.visit(node.for_cond)):
+			ThereIsContinue = False
+			ThereIsBreak = False
+			#Something will return from Block
+			flowControl = self.visit(node.for_body)
+			if flowControl == 0:
+				break
+			elif flowControl == 1:
+				continue
+			else:
+				pass
+			self.visit(node.for_increment)
+
+	def visit(self, node: IfStmt):
+		test = self.visit(node.cond)
+		if _is_truthy(test):
+			self.visit(node.cons)
+		elif node.altr:
+			self.visit(node.altr)
+
+	def visit(self, node: Return):
+		raise ReturnException(self.visit(node.expr))
+
+	def visit(self, node: ExprStmt):
+		self.visit(node.expr)
 
 	def visit(self, node: Literal):
 		return node.value
 
+	def visit(self, node: Binary):
+		left  = self.visit(node.left)
+		right = self.visit(node.right)
+		if node.op == '+':
+			(isinstance(left, str) and isinstance(right, str)) or self._check_numeric_operands(node, left, right)
+			return left + right
+		elif node.op == '-':
+			self._check_numeric_operands(node, left, right)
+			return left - right
+		elif node.op == '*':
+			self._check_numeric_operands(node, left, right)
+			return left * right
+		elif node.op == '/':
+			self._check_numeric_operands(node, left, right)
+			return left / right
+		elif node.op == '%':
+			self._check_numeric_operands(node, left, right)
+			return left % right
+		elif node.op == '==':
+			return left == right
+		elif node.op == '!=':
+			return left != right
+		elif node.op == '<':
+			self._check_numeric_operands(node, left, right)
+			return left < right
+		elif node.op == '>':
+			self._check_numeric_operands(node, left, right)
+			return left > right
+		elif node.op == '<=':
+			self._check_numeric_operands(node, left, right)
+			return left <= right
+		elif node.op == '>=':
+			self._check_numeric_operands(node, left, right)
+			return left >= right
+		else:
+			raise NotImplementedError(f"Interp Error. Wrong Operator {node.op}")
+
+	def visit(self, node: Logical):
+		left = self.visit(node.left)
+		if node.op == '||':
+			return left if _is_truthy(left) else self.visit(node.right)
+		if node.op == '&&':
+			return self.visit(node.right) if _is_truthy(left) else left
+		raise NotImplementedError(f"Interp Error. Wrong Operator {node.op}")
+
+	def visit(self, node: Unary):
+		expr = self.visit(node.expr)
+		if node.op == "-":
+			self._check_numeric_operand(node, expr)
+			return - expr
+		elif node.op == "!":
+			return not _is_truthy(expr)
+		else:
+			raise NotImplementedError(f"Interp Error. Wrong Operator {node.op}")
+
+	def visit(self, node: Grouping):
+		return self.visit(node.expr)
 
 	def visit(self, node: Assign):
 		expr = 0
@@ -179,7 +327,69 @@ class Interpreter(Visitor): #This is a visitor
 			expr = self.env[node.name] % self.visit(node.expr)
 		self.env[node.name] = expr
 
+	def visit(self, node: AssignPostfix):
+		temp = self.visit(node.expr)
+		expr=0
+		if node.op == "++":
+			expr = self.visit(node.expr) + 1
+		else:
+			expr = self.visit(node.expr) - 1
+		self.env[node.expr.name]=expr
+		return temp
+
+	def visit(self, node: AssignPrefix):
+		expr = 0
+		if node.op == "++":
+			expr = self.visit(node.expr) + 1
+		else:
+			expr = self.visit(node.expr) - 1
+		self.env[node.expr.name]=expr
+		return expr
+
+	def visit(self, node: Call):
+		callee = self.visit(node.func)
+		if not callable(callee):
+			self.error(node.func, f'Interp Error {self.ctxt.find_source(node.func)!r} is not callable')
+
+		if node.args is not None:
+			args = [ self.visit(arg) for arg in node.args ]
+		else:
+			args = []
+		try:
+			return callee(self, *args)
+		except CallError as err:
+			self.error(node.func, str(err))
 
 	def visit(self, node: Variable):
 		return self.env[node.name]
 
+	def visit(self, node: Set):
+		obj = self.visit(node.obj)
+		val = self.visit(node.expr)
+		if isinstance(obj, Instance):
+			obj.set(node.name, val)
+			return val
+		else:
+			self.error(node.obj, f'Interp Error{self.ctxt.find_source(node.obj)!r} is not an instance')
+
+	def visit(self, node: Get):
+		obj = self.visit(node.obj)
+		if isinstance(obj, Instance):
+			try:
+				return obj.get(node.name)
+			except AttributeError as err:
+				self.error(node.obj, str(err))
+		else:
+			self.error(node.obj, f'Interp Error{self.ctxt.find_source(node.obj)!r}  is not an instance')
+
+	def visit(self, node: This):
+		return self.env['this']
+
+	def visit(self, node: Super):
+		distance = self.localmap[id(node)]
+		sclass = self.env.maps[distance]['super']
+		this = self.env.maps[distance-1]['this']
+		method = sclass.find_method(node.name)
+		if not method:
+			self.error(node.object, f'Interp Error. Not defined property {node.name!r}')
+		return method.bind(this)
