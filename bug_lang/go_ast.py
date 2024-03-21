@@ -37,9 +37,23 @@ class Declaration(Statement):
     pass
 
 
+
+
 #---------------------------------------------------------------
 #  Nodos del Tipo Declaration, son Statement especiales que declaran la existencia de algo
 #---------------------------------------------------------------
+@dataclass
+class ClassDeclaration(Declaration):
+    name   : str
+    sclass : str
+    methods: List[Statement] = field(default_factory=list)
+
+
+@dataclass
+class FuncDeclaration(Declaration):
+    name   : str
+    parameters: List[Expression] = field(default_factory=list)
+    stmts  : List[Statement] = field(default_factory=list)
 
 @dataclass
 class VarDeclaration(Declaration):
@@ -59,6 +73,43 @@ class Program(Statement):
 class Print(Statement):
     expr   : Expression
 
+@dataclass
+class IfStmt(Statement):
+    cond   : Expression
+    cons   : List [Statement]=field(default_factory=list) #el consecuente
+    altr   : List [Statement]=field(default_factory=list)
+
+@dataclass
+class WhileStmt(Statement):
+    cond  : Expression
+    body  : List[Statement]=field(default_factory=list)
+
+@dataclass
+class ForStmt(Statement):
+    for_init : Expression
+    for_cond : Expression
+    for_increment : Expression
+    for_body : List[Statement]=field(default_factory=list)
+
+@dataclass
+class Return(Statement):
+    expr  : Expression
+
+@dataclass
+class ExprStmt(Statement):
+    expr  : Expression
+
+@dataclass
+class Block(Statement):
+    stmts :  List[Statement] = field(default_factory=list)
+
+@dataclass
+class Continue(Statement):
+    name   : str
+
+@dataclass
+class Break(Statement):
+    name   : str
 
 #---------------------------------------------------------------
 # Expression representan valores
@@ -70,6 +121,30 @@ class Literal(Expression):
     value  : Any
 
 @dataclass
+class Binary(Expression): #tiene un hijo izquierdo y un hijo derecho, o sea, suma, resta, multiplicación y división
+    op     : str
+    left   : Expression
+    right  : Expression
+
+
+@dataclass
+class Logical(Expression):
+    op     : str            # <, <=, >, >=, ==, !=, && , ||
+    left   : Expression
+    right  : Expression
+
+
+@dataclass
+class Unary(Expression):
+    op     : str           # -, !
+    expr   : Expression
+
+@dataclass
+class Grouping(Expression): # no es obligatorio
+    expr  : Expression
+
+
+@dataclass
 class Variable(Expression):
     name   : str
 
@@ -79,10 +154,43 @@ class Assign(Expression):
     name   : str
     expr   : Expression
 
+@dataclass
+class AssignPostfix(Expression):
+    op     : str
+    expr   : Expression
+
+@dataclass
+class AssignPrefix(Expression):
+    op     : str
+    expr   : Expression
+
+@dataclass
+class Call(Expression):
+    func  : Expression
+    args  : List[Expression]=field(default_factory=list)
 
 
-#---------------------------------------------------------------
-#---------------------------------------------------------------
+@dataclass
+class Set(Expression):
+    obj   : str
+    name  : str
+    expr  : Expression
 
-#más aelante usaremos el Visitor para imprimir el AST de forma bonita usando tree.py
-#repositorio de rich en github, el archivo tree
+
+@dataclass
+class Get(Expression):
+    obj   : str
+    name  : str
+
+
+@dataclass
+class Super(Expression):
+    name   : str
+
+@dataclass
+class List(Expression):
+    name   : str
+
+@dataclass
+class This(Expression):
+    pass
