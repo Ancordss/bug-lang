@@ -1,5 +1,5 @@
 '''
-clex.py
+lexer.py
 
 El papel de este programa es convertir texto sin procesar en simbolos
 conocidos como tokens. Un token consta de un tipo y un valor. Por
@@ -10,15 +10,12 @@ token esta a la izquierda, un ejemplo del texto que coincida esta a la
 derecha.
 
 Palabras reservadas:
-    VAR    : 'var'
-    PRINT  : 'print'
-    IF     : 'if'
-    ELSE   : 'else'
-    WHILE  : 'while'
-    FUN    : 'fun'
-    RETURN : 'return'
-    TRUE   : 'true'
-    FALSE  : 'false'
+    VAR    : 'bee'
+    PRINT  : 'spray'
+    IF     : 'spider'
+    ELSE   : 'web'
+    WHILE  : 'looper'
+    FUN    : 'flick'
 
 Identificadores/Nombres:
     IDENT  : Texto que inicia con una letra o '_', seguido por
