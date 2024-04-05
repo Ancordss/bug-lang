@@ -62,6 +62,7 @@ terminar y otros problemas.
 
 import sly
 
+
 # Definición Analizador Léxico
 class Lexer(sly.Lexer):
     def __init__(self, ctxt):

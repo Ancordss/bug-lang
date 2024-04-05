@@ -1,7 +1,11 @@
 
-from bug_lang.lexer import Lexer
 import sly
+from rich.console import Console
+from rich.table import Table
+
 from bug_lang.go_ast import *
+from bug_lang.lexer import Lexer
+
 
 class Parser(sly.Parser):
     debugfile="buglang.txt"
@@ -9,8 +13,29 @@ class Parser(sly.Parser):
     tokens = Lexer.tokens
 
     def __init__(self, ctxt):
-        self.ctxt=ctxt
+        super().__init__()
+        self.ctxt = ctxt
+        self.token_log = []
 
+    def log_token(self, token):
+        self.token_log.append(token)
+        
+        
+    def create_token_log_table(self):
+        table = Table(title="Result Objects")
+        # Aquí definirías las columnas que deseas para tus objetos
+        table.add_column("Function Name")
+        table.add_column("Parameters")
+        table.add_column("Statements")
+        
+        for obj in self.token_log:
+            if isinstance(obj, FuncDeclaration):
+                table.add_row(obj.name, obj.parameters, obj.stmts)
+            elif isinstance(obj, ForStmt):
+                table.add_row(obj.for_init, obj.for_cond, obj.for_increment, obj.for_body)
+            # Añade más tipos según necesites
+            
+        return table
     # preceencia de operadores
     precedence = (
         ('left', PLUSPLUS),
@@ -33,6 +58,7 @@ class Parser(sly.Parser):
     # Definimos las reglas en BNF (o en EBNF)
     @_("{ declaration }")
     def program(self, p):
+        self.log_token((p.declaration))
         return Program(p.declaration)
 
     @_("class_declaration",
@@ -216,6 +242,28 @@ class Parser(sly.Parser):
     @_("expression { COMMA expression }")
     def arguments(self, p):
         return [ p. expression0 ] + p.expression1
+    
+    def token(self, tok):
+        # Registramos el token
+        self.log_token(tok)
+        return tok
+    
+    def save_token_log_as_html(self, output_file="token_log.html"):
+        console = Console(record=True)
+        console.print("\n\n[bold blue]********** TOKEN LOG **********[/bold blue]\n")
+        
+        # Crear la tabla de la bitácora
+        table = self.create_token_log_table()
+        
+        # Imprimir la tabla usando Rich
+        console.print(table)
+        
+        # Obtener la salida como HTML usando Rich
+        html_output = console.export_html()
+
+        # Guardar la salida HTML en un archivo
+        with open(output_file, "w", encoding="utf-8") as html_file:
+            html_file.write(html_output)
 
     def error(self, p):
         if p:

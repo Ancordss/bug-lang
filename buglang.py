@@ -1,8 +1,12 @@
+import webbrowser
+
 import click
-from bug_lang.context import Context
 from rich.console import Console
 from rich.syntax import Syntax
 from tabulate import tabulate
+
+from bug_lang.context import Context
+
 
 # Define the command-line interface using Click decorators
 @click.command()
@@ -13,7 +17,7 @@ from tabulate import tabulate
 @click.option('--sym', is_flag=True, help='Dump the symbol table')  # the Checker one
 @click.option('-R', '--exec', 'execute', is_flag=True, help='Execute the generated program')
 def main(input_file, lex, ast, dot, sym, execute):
-    console = Console()
+    console = Console(record=True)
 
     console.print("\t\t\t\n[bold green]################################ Bug-lang Compiler ################################[/bold green]\n")
     ctxt = Context()
@@ -28,6 +32,15 @@ def main(input_file, lex, ast, dot, sym, execute):
             row = [tok.type, tok.value, tok.lineno]
             table.append(row)
         console.print(tabulate(table, headers='firstrow', tablefmt='fancy_grid'))
+        html_output = console.export_html()
+    
+        # Guardar la salida HTML en un archivo
+        with open("output.html", "w", encoding="utf-8") as html_file:
+            html_file.write(html_output)
+            
+        # Abrir el archivo en el navegador
+        webbrowser.open("output.html")
+        
 
     if ast:
         console.print("\n\n[bold magenta]********** AST **********[/bold magenta]\n")

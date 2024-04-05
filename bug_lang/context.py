@@ -27,6 +27,7 @@ class Context:
 		self.have_errors = False
 		self.source = source
 		self.ast = self.parser.parse(self.lexer.tokenize(self.source))
+		self.parser.save_token_log_as_html("token_log.html")
 
 	def run(self): #makes work the interpreter
 		if not self.have_errors:
