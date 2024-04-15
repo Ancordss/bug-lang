@@ -1,6 +1,7 @@
 # render.py
-from bug_lang.go_ast import *
 from graphviz import Digraph
+
+from bug_lang.go_ast import *
 
 
 class DotRender(Visitor):

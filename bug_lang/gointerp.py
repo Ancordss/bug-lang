@@ -3,14 +3,14 @@
 Tree-walking interpreter
 TODO:here we need to convert all to go code
 '''
-from collections import ChainMap
-from bug_lang.go_ast    import *
-from bug_lang.checker import Checker
-from rich    import print
-from bug_lang.utils.stdlib import *
-
 import math
+from collections import ChainMap
 
+from rich import print
+
+from bug_lang.checker import Checker
+from bug_lang.go_ast import *
+from bug_lang.utils.stdlib import *
 
 
 def _is_truthy(value):
