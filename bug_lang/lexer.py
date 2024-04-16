@@ -81,7 +81,7 @@ class Lexer(sly.Lexer):
         #LSQBRA, RSQBRA,
 
         # Otros tokens
-        IDENT, NUM, REAL, STRING,
+        IDENT, NUM, REAL, STRING, STRING_TYPE, INT_TYPE,FLOAT_TYPE,
 
         ADDEQ, MINEQ, TIMESEQ, DIVIDEEQ, MODULEEQ,
 
@@ -159,21 +159,28 @@ class Lexer(sly.Lexer):
     IDENT['end_spider'] = END_IF
     IDENT['continue'] = CONTINUE
     IDENT['break'] = BREAK
+    IDENT['silk'] = STRING_TYPE
+    IDENT['ant'] = INT_TYPE
+    IDENT['flutter'] = FLOAT_TYPE
 
     @_(r'".*"')
     def STRING(self, t):
         t.value = str(t.value)
+        print(t)
         return t
 
     @_(r'(\d+\.\d*)|(\.\d+)')
     def REAL(self, t):
         t.value = float(t.value)
+        print(t)        
         return t
 
     @_(r'\d+')
     def NUM(self, t):
         t.value = int(t.value)
+        print(t)
         return t
+    
 
     def error(self, t):
         self.ctxt.error(t, f"LEX ERROR. Illegal character {str(t.value[0])} + at line: {self.lineno}")
