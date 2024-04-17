@@ -76,10 +76,10 @@ class Parser(sly.Parser):
     def func_declaration(self, p):
         return p[1]
 
-    @_("VAR IDENT [ ASSIGN expression ] SEMI")
+    @_("VAR  STRING_TYPE|INT_TYPE|FLOAT_TYPE  IDENT [ ASSIGN expression ] SEMI")
     def var_declaration(self, p):
         return VarDeclaration(p.IDENT, p.expression)
-
+    
     @_("expr_stmt",
        "for_stmt",
        "if_stmt",
@@ -180,7 +180,7 @@ class Parser(sly.Parser):
     @_("REAL", "NUM", "STRING")
     def factor(self, p):
         return Literal(p[0])
-
+    
     @_("TRUE", "FALSE")
     def factor(self, p):
         return Literal(p[0] == 'true')
