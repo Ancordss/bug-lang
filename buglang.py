@@ -4,6 +4,8 @@ import click
 from rich.console import Console
 from rich.syntax import Syntax
 from tabulate import tabulate
+from rich.table import Table
+from rich.markdown import Markdown
 
 from bug_lang.context import Context
 
@@ -16,7 +18,8 @@ from bug_lang.context import Context
 @click.option("-D", "--dot", is_flag=True, help="Generate AST graph as DOT format")
 @click.option("-s", "--sym", is_flag=True, help="Dump the symbol table")  # the Checker one
 @click.option("-R", "--exec", "execute", is_flag=True, help="Execute the generated program")
-def main(input_file, lex, ast, dot, sym, execute):
+@click.option("-er", "--errors", is_flag=True, help="Export errors to HTML file")
+def main(input_file, lex, ast, dot, sym, execute, errors):
     console = Console(record=True)
 
     console.print(
@@ -62,6 +65,18 @@ def main(input_file, lex, ast, dot, sym, execute):
             ctxt.run(sym)
         else:
             ctxt.run(None)
+
+    if errors and ctxt.have_errors:
+        console.print("\n[bold red]PARSER AND LEXER ERRORS[/bold red]")
+        error_table = Table(title="Compilation Errors", show_header=True, header_style="bold magenta")
+        error_table.add_column("Error Details", style="red")
+        for error in ctxt.errors:
+            error_table.add_row(error)
+        console.print(error_table)
+        html_output = console.export_html()
+        with open("errors_output.html", "w", encoding="utf-8") as html_file:
+            html_file.write(html_output)
+        webbrowser.open("errors_output.html")
 
 
 if __name__ == "__main__":

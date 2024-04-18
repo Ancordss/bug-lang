@@ -15,6 +15,7 @@ class Parser(sly.Parser):
         super().__init__()
         self.ctxt = ctxt
         self.token_log = []
+        self.last_token_end = 0
 
     def log_token(self, token):
         self.token_log.append(token)
@@ -264,7 +265,8 @@ class Parser(sly.Parser):
 
     def error(self, p):
         if p:
-            self.ctxt.error(p, f"PARSER ERROR, Syntax error in the Token {p.type} due to: {p}")
-            # Just discard the token and tell the parser it's okay.
+            error_message = f"PARSER ERROR at line {p.lineno}, column {p.index}: Syntax error near '{p.value}'"
+            self.ctxt.error(p.lineno, p.index, error_message)
         else:
-            self.ctxt.error(p, f"PARSER ERROR, Syntax Error in EOF. Check braces, semicolons and END_IF ")
+            error_message = "PARSER ERROR: Syntax error at EOF"
+            self.ctxt.error(None, None, error_message)
