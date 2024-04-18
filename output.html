@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+.r1 {color: #008000; text-decoration-color: #008000; font-weight: bold}
+.r2 {color: #000080; text-decoration-color: #000080; font-weight: bold}
+.r3 {color: #008080; text-decoration-color: #008080; font-weight: bold}
+.r4 {font-weight: bold}
+body {
+    color: #000000;
+    background-color: #ffffff;
+}
+</style>
+</head>
+<body>
+    <pre style="font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><code style="font-family:inherit">                        
+<span class="r1">################################ Bug-lang Compiler ################################</span>
+
+
+
+<span class="r2">********** TOKENS **********</span>
+
+╒════════╤═════════╤═══════════╕
+│ Type   │ Value   │   At line │
+╞════════╪═════════╪═══════════╡
+│ IDENT  │ var     │         <span class="r3">3</span> │
+├────────┼─────────┼───────────┤
+│ IDENT  │ a       │         <span class="r3">3</span> │
+├────────┼─────────┼───────────┤
+│ ASSIGN │ =       │         <span class="r3">3</span> │
+├────────┼─────────┼───────────┤
+│ NUM    │ <span class="r3">123</span>     │         <span class="r3">3</span> │
+├────────┼─────────┼───────────┤
+│ SEMI   │ ;       │         <span class="r3">3</span> │
+├────────┼─────────┼───────────┤
+│ IDENT  │ print   │         <span class="r3">4</span> │
+├────────┼─────────┼───────────┤
+│ LPAREN │ <span class="r4">(</span>       │         <span class="r3">4</span> │
+├────────┼─────────┼───────────┤
+│ IDENT  │ a       │         <span class="r3">4</span> │
+├────────┼─────────┼───────────┤
+│ RPAREN │ <span class="r4">)</span>       │         <span class="r3">4</span> │
+╘════════╧═════════╧═══════════╛
+</code></pre>
+</body>
+</html>
