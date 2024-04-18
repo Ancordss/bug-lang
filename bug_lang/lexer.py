@@ -67,7 +67,6 @@ import sly
 class Lexer(sly.Lexer):
     def __init__(self, ctxt):
         self.ctxt=ctxt
-
     # Definición de Símbolos
     tokens = {
         # Palabras reservadas
@@ -96,6 +95,7 @@ class Lexer(sly.Lexer):
     @_(r'\n+')
     def ignore_newline(self, t):
         self.lineno += t.value.count('\n')
+        self.last_token_end = 0  # Resetea la columna al comienzo de la nueva línea
 
     # Ignorar Comentarios de varias líneas
     @_(r'/\*(.|\n)*\*/')
@@ -175,6 +175,9 @@ class Lexer(sly.Lexer):
         t.value = int(t.value)
         return t
 
-    def error(self, t):
-        self.ctxt.error(t, f"LEX ERROR. Illegal character {str(t.value[0])} + at line: {self.lineno}")
-        self.index += 1
+    def error(self, value):
+        error_message = f"LEXER ERROR at line {self.lineno}, position {self.index}: Illegal character '{value.value}'"
+        self.ctxt.error(self.lineno, self.index, error_message)
+        self.index += 1  # Avanzar el índice para evitar el bucle infinito
+
+    

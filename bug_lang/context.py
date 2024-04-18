@@ -15,7 +15,8 @@ import bug_lang.go_ast as go_ast
 
 class Context:
 
-	def __init__(self):
+	def __init__(self):	
+		self.errors = []
 		self.lexer  = Lexer(self)
 		self.parser = Parser(self)
 		self.interp = Interpreter(self)
@@ -40,23 +41,21 @@ class Context:
 		else:
 			return f'{type(node).__name__} (Sorry, source not available)'
 
-	def error(self, position, message):
-		if isinstance(position, go_ast.Node):
-			lineno = self.parser.line_position(position)
-			(start, end) = (part_start, part_end) = self.parser.index_position(position)
-			while start >= 0 and self.source[start] != '\n':
-				start -=1
-
-			start += 1
-			while end < len(self.source) and self.source[end] != '\n':
-				end += 1
-			print()
-			print(self.source[start:end])
-			print(" "*(part_start - start), end='')
-			print("^"*(part_end - part_start))
-			print(f'{lineno}: {message}')
-
-		else:
-			#print(f'{position} : {message}')
-			print(message)
-		self.have_errors = True
+	def error(self, lineno, index, message):
+			if lineno is None or index is None:
+				# Maneja los casos donde lineno o index son None
+				print(f"Error: {message}")
+				print("Location unknown")
+			else:
+				line_start = self.source.rfind('\n', 0, index) + 1
+				line_end = self.source.find('\n', index)
+				line_end = line_end if line_end != -1 else len(self.source)
+				marker = " " * (index - line_start) + "^"
+				
+				# Muestra el error con ubicación precisa
+				print(f"Error at line {lineno}, column {index - line_start + 1}: {message}")
+				print(self.source[line_start:line_end])
+				print(marker)
+			
+			self.have_errors = True
+			self.errors.append(f'{lineno if lineno is not None else "Unknown"}: {message}')

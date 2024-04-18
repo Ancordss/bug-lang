@@ -1,4 +1,5 @@
 // print
 
 var a=123;
-print(a);
+print(a)
+$  // Carácter ilegal introducido aquí
