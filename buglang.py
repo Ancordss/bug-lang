@@ -16,13 +16,15 @@ from bug_lang.context import Context
 @click.option('-l', '--lex', is_flag=True, help='Display tokens from lexer')
 @click.option('-a', '--AST', is_flag=True, help='Display AST')
 @click.option('-D', '--dot', is_flag=True, help='Generate AST graph as DOT format')
-@click.option('--sym', is_flag=True, help='Dump the symbol table')  # the Checker one
+@click.option("-s", "--sym", is_flag=True, help="Dump the symbol table")  # the Checker one
 @click.option('-R', '--exec', 'execute', is_flag=True, help='Execute the generated program')
 @click.option('-er', '--errors', is_flag=True, help='Export errors to HTML file')
 def main(input_file, lex, ast, dot, sym, execute, errors):
     console = Console(record=True)
 
-    console.print("\t\t\t\n[bold green]################################ Bug-lang Compiler ################################[/bold green]\n")
+    console.print(
+        "\t\t\t\n[bold green]################################ Bug-lang Compiler ################################[/bold green]\n"
+    )
     ctxt = Context()
     source = input_file.read()
     ctxt.parse(source)
@@ -34,16 +36,15 @@ def main(input_file, lex, ast, dot, sym, execute, errors):
         for tok in tokens:
             row = [tok.type, tok.value, tok.lineno]
             table.append(row)
-        console.print(tabulate(table, headers='firstrow', tablefmt='fancy_grid'))
+        console.print(tabulate(table, headers="firstrow", tablefmt="fancy_grid"))
         html_output = console.export_html()
-    
+
         # Guardar la salida HTML en un archivo
         with open("output.html", "w", encoding="utf-8") as html_file:
             html_file.write(html_output)
-            
+
         # Abrir el archivo en el navegador
         webbrowser.open("output.html")
-        
 
     
 
@@ -58,12 +59,16 @@ def main(input_file, lex, ast, dot, sym, execute, errors):
         dot = DotRender.render(ctxt.ast)  # render
         console.print(dot)
 
-    if sym:
-        console.print("\n[bold yellow]Symbol Table[/bold yellow]\n")
-        console.print(ctxt.interp.env)
+    # if sym:
+    #     console.print("\n[bold yellow]Symbol Table[/bold yellow]\n")
+    #     console.print(ctxt.tb_sym())
 
     if execute:
-        ctxt.run()
+        if sym:
+            ctxt.run(sym)
+        else:
+            ctxt.run(None)
+
 
 
     if errors and ctxt.have_errors:

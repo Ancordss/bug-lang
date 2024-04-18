@@ -1,20 +1,20 @@
 # context.py
-'''
+"""
 Clase de alto nivel que contiene todo sobre el análisis/ejecución
 de un programa.
 
 Sirve como repositorio de información sobre el programa, incluido
 el código fuente, informe de errores, etc.
-'''
-from bug_lang.lexer    import Lexer
-from bug_lang.parser  import Parser
-from bug_lang.gointerp import Interpreter
+"""
 from rich import print
 
 import bug_lang.go_ast as go_ast
+from bug_lang.gointerp import Interpreter
+from bug_lang.lexer import Lexer
+from bug_lang.parser import Parser
+
 
 class Context:
-
 	def __init__(self):	
 		self.errors = []
 		self.lexer  = Lexer(self)
@@ -30,9 +30,9 @@ class Context:
 		self.ast = self.parser.parse(self.lexer.tokenize(self.source))
 		self.parser.save_token_log_as_html("token_log.html")
 
-	def run(self): #makes work the interpreter
-		if not self.have_errors:
-			return self.interp.interpret(self.ast)
+	def run(self, sym):  # makes work the interpreter
+      if not self.have_errors:
+          return self.interp.interpret(self.ast, sym)
 
 	def find_source(self, node): #it searches the line
 		indices = self.parser.index_position(node)
