@@ -1,4 +1,5 @@
 // print
 
-bee flutter a=12.3;
-spray(a);
+var a=123;
+print(a)
+$  // Carácter ilegal introducido aquí
