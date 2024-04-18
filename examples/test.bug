@@ -13,7 +13,7 @@ fib.mc
 calcula el n-esimo número de la secuencia de Fibonacci
 
 main
-fly (bee i = 1; i < 20; i = i + 1) {
+fly (bee ant i = 1; i < 20; i = i + 1) {
   spray(fib(i));
 }
 
@@ -29,7 +29,7 @@ flick fib(n){
   //return 0;
 }
 
-fly(bee i = 0; i < 21; i=i+1){
+fly(bee ant i = 0; i < 21; i=i+1){
   spray(fib(i));
 }
 
