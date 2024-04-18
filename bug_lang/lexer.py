@@ -1,4 +1,4 @@
-'''
+"""
 lexer.py
 
 El papel de este programa es convertir texto sin procesar en simbolos
@@ -58,7 +58,7 @@ Comentarios:
 Errores: Su Analizador lexico opcionalmente puede reconocer y
 reportar errores relacionados a caracteres ilegales, comentarios sin
 terminar y otros problemas.
-'''
+"""
 
 import sly
 
@@ -66,102 +66,145 @@ import sly
 # Definición Analizador Léxico
 class Lexer(sly.Lexer):
     def __init__(self, ctxt):
-        self.ctxt=ctxt
+        self.ctxt = ctxt
 
     # Definición de Símbolos
     tokens = {
         # Palabras reservadas
-        FUN, VAR, PRINT, IF, ELSE, WHILE, RETURN, TRUE, FALSE,
-        CLASS, FOR, WHILE, TRUE, NIL, THIS, SUPER,
-
+        FUN,
+        VAR,
+        PRINT,
+        IF,
+        ELSE,
+        WHILE,
+        RETURN,
+        TRUE,
+        FALSE,
+        CLASS,
+        FOR,
+        WHILE,
+        TRUE,
+        NIL,
+        THIS,
+        SUPER,
         # Operadores de Relacion (long-2)
-        PLUS, MINUS, TIMES, DIVIDE, POINT, SEMI, COMMA, LPAREN,
-        RPAREN, LBRACE, RBRACE, LT, LE, GT, GE,
-        EQ, NE, AND, OR, NOT, ASSIGN, MODULE, END_IF,
-        #LSQBRA, RSQBRA,
-
+        PLUS,
+        MINUS,
+        TIMES,
+        DIVIDE,
+        POINT,
+        SEMI,
+        COMMA,
+        LPAREN,
+        RPAREN,
+        LBRACE,
+        RBRACE,
+        LT,
+        LE,
+        GT,
+        GE,
+        EQ,
+        NE,
+        AND,
+        OR,
+        NOT,
+        ASSIGN,
+        MODULE,
+        END_IF,
+        # LSQBRA, RSQBRA,
         # Otros tokens
-        IDENT, NUM, REAL, STRING, STRING_TYPE, INT_TYPE,FLOAT_TYPE,
-
-        ADDEQ, MINEQ, TIMESEQ, DIVIDEEQ, MODULEEQ,
-
-        PLUSPLUS, MINUSMINUS, CONTINUE, BREAK
+        IDENT,
+        NUM,
+        REAL,
+        STRING,
+        STRING_TYPE,
+        INT_TYPE,
+        FLOAT_TYPE,
+        ADDEQ,
+        MINEQ,
+        TIMESEQ,
+        DIVIDEEQ,
+        MODULEEQ,
+        PLUSPLUS,
+        MINUSMINUS,
+        CONTINUE,
+        BREAK,
     }
-    literals = '+-*/%=(){}[];,'
+    literals = "+-*/%=(){}[];,"
 
     # Ignoramos espacios en blanco (white-space)
-    ignore = ' \t\r'
+    ignore = " \t\r"
 
     # Ignoramos newline
-    @_(r'\n+')
+    @_(r"\n+")
     def ignore_newline(self, t):
-        self.lineno += t.value.count('\n')
+        self.lineno += t.value.count("\n")
 
     # Ignorar Comentarios de varias líneas
-    @_(r'/\*(.|\n)*\*/')
+    @_(r"/\*(.|\n)*\*/")
     def ignore_comments(self, t):
-        self.lineno += t.value.count('\n')
+        self.lineno += t.value.count("\n")
 
     # Ignorar Comentarios de una sola línea
-    @_(r'//.*\n')
+    @_(r"//.*\n")
     def ignore_cppcomments(self, t):
         self.lineno += 1
 
     # Definicion de Tokens a traves de regexp
-    PLUSPLUS = r'\+\+'
-    ADDEQ = r'\+='
-    PLUS = r'\+'
-    MINUSMINUS = r'--'
-    MINEQ =  r'-='
-    MINUS =r'-'
-    TIMESEQ =  r'\*='
-    TIMES =r'\*'
-    DIVIDEEQ =  r'/='
-    DIVIDE =r'/'
-    POINT =r'\.'
-    SEMI =r';'
-    COMMA =r','
-    LPAREN =r'\('
-    RPAREN =r'\)'
-    LBRACE =r'{'
-    RBRACE =r'}'
-    #LSQBRA =r'\['
-    #RSQBRA =r'\]'
-    LE  = r'<='
-    LT  = r'<'
-    GE  = r'>='
-    GT  = r'>'
-    EQ  = r'=='
-    NE  = r'!='
-    AND = r'&&'
-    OR  = r'\|\|'
-    NOT = r'!'
-    ASSIGN=r'='
-    MODULEEQ =  r'%='
-    MODULE=r'%'
+    PLUSPLUS = r"\+\+"
+    ADDEQ = r"\+="
+    PLUS = r"\+"
+    MINUSMINUS = r"--"
+    MINEQ = r"-="
+    MINUS = r"-"
+    TIMESEQ = r"\*="
+    TIMES = r"\*"
+    DIVIDEEQ = r"/="
+    DIVIDE = r"/"
+    POINT = r"\."
+    SEMI = r";"
+    COMMA = r","
+    LPAREN = r"\("
+    RPAREN = r"\)"
+    LBRACE = r"{"
+    RBRACE = r"}"
+    # LSQBRA =r'\['
+    # RSQBRA =r'\]'
+    LE = r"<="
+    LT = r"<"
+    GE = r">="
+    GT = r">"
+    EQ = r"=="
+    NE = r"!="
+    AND = r"&&"
+    OR = r"\|\|"
+    NOT = r"!"
+    ASSIGN = r"="
+    MODULEEQ = r"%="
+    MODULE = r"%"
 
-    IDENT = r'[a-zA-Z_][a-zA-Z0-9_]*'
-    IDENT['flick']    = FUN
-    IDENT['bee']    = VAR
-    IDENT['spray']  = PRINT
-    IDENT['spider']     = IF
-    IDENT['web']   = ELSE
-    IDENT['looper']  = WHILE
-    IDENT['return'] = RETURN
-    IDENT['true']   = TRUE
-    IDENT['false']  = FALSE
-    IDENT['class']  = CLASS
-    IDENT['fly']  = FOR
+    IDENT = r"[a-zA-Z_][a-zA-Z0-9_]*"
+    IDENT["flick"] = FUN
+    IDENT["bee"] = VAR
+    IDENT["spray"] = PRINT
+    IDENT["spider"] = IF
+    IDENT["web"] = ELSE
+    IDENT["looper"] = WHILE
+    IDENT["return"] = RETURN
+    IDENT["true"] = TRUE
+    IDENT["false"] = FALSE
+    IDENT["class"] = CLASS
+    IDENT["fly"] = FOR
     # IDENT['while']  = WHILE
-    IDENT['nil']  = NIL
-    IDENT['this']  = THIS
-    IDENT['super']  = SUPER
-    IDENT['end_spider'] = END_IF
-    IDENT['continue'] = CONTINUE
-    IDENT['break'] = BREAK
-    IDENT['silk'] = STRING_TYPE
-    IDENT['ant'] = INT_TYPE
-    IDENT['flutter'] = FLOAT_TYPE
+    IDENT["nil"] = NIL
+    IDENT["this"] = THIS
+    IDENT["super"] = SUPER
+    IDENT["end_spider"] = END_IF
+    IDENT["continue"] = CONTINUE
+    IDENT["break"] = BREAK
+    IDENT["silk"] = STRING_TYPE
+    IDENT["ant"] = INT_TYPE
+    IDENT["flutter"] = FLOAT_TYPE
 
     @_(r'".*"')
     def STRING(self, t):
@@ -169,18 +212,17 @@ class Lexer(sly.Lexer):
         print(t)
         return t
 
-    @_(r'(\d+\.\d*)|(\.\d+)')
+    @_(r"(\d+\.\d*)|(\.\d+)")
     def REAL(self, t):
         t.value = float(t.value)
-        print(t)        
+        print(t)
         return t
 
-    @_(r'\d+')
+    @_(r"\d+")
     def NUM(self, t):
         t.value = int(t.value)
         print(t)
         return t
-    
 
     def error(self, t):
         self.ctxt.error(t, f"LEX ERROR. Illegal character {str(t.value[0])} + at line: {self.lineno}")

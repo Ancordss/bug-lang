@@ -10,16 +10,18 @@ from bug_lang.context import Context
 
 # Define the command-line interface using Click decorators
 @click.command()
-@click.argument('input_file', type=click.File('r'))
-@click.option('-l', '--lex', is_flag=True, help='Display tokens from lexer')
-@click.option('-a', '--AST', is_flag=True, help='Display AST')
-@click.option('-D', '--dot', is_flag=True, help='Generate AST graph as DOT format')
-@click.option('--sym', is_flag=True, help='Dump the symbol table')  # the Checker one
-@click.option('-R', '--exec', 'execute', is_flag=True, help='Execute the generated program')
+@click.argument("input_file", type=click.File("r"))
+@click.option("-l", "--lex", is_flag=True, help="Display tokens from lexer")
+@click.option("-a", "--AST", is_flag=True, help="Display AST")
+@click.option("-D", "--dot", is_flag=True, help="Generate AST graph as DOT format")
+@click.option("-s", "--sym", is_flag=True, help="Dump the symbol table")  # the Checker one
+@click.option("-R", "--exec", "execute", is_flag=True, help="Execute the generated program")
 def main(input_file, lex, ast, dot, sym, execute):
     console = Console(record=True)
 
-    console.print("\t\t\t\n[bold green]################################ Bug-lang Compiler ################################[/bold green]\n")
+    console.print(
+        "\t\t\t\n[bold green]################################ Bug-lang Compiler ################################[/bold green]\n"
+    )
     ctxt = Context()
     source = input_file.read()
     ctxt.parse(source)
@@ -31,16 +33,15 @@ def main(input_file, lex, ast, dot, sym, execute):
         for tok in tokens:
             row = [tok.type, tok.value, tok.lineno]
             table.append(row)
-        console.print(tabulate(table, headers='firstrow', tablefmt='fancy_grid'))
+        console.print(tabulate(table, headers="firstrow", tablefmt="fancy_grid"))
         html_output = console.export_html()
-    
+
         # Guardar la salida HTML en un archivo
         with open("output.html", "w", encoding="utf-8") as html_file:
             html_file.write(html_output)
-            
+
         # Abrir el archivo en el navegador
         webbrowser.open("output.html")
-        
 
     if ast:
         console.print("\n\n[bold magenta]********** AST **********[/bold magenta]\n")
@@ -52,12 +53,16 @@ def main(input_file, lex, ast, dot, sym, execute):
         dot = DotRender.render(ctxt.ast)  # render
         console.print(dot)
 
-    if sym:
-        console.print("\n[bold yellow]Symbol Table[/bold yellow]\n")
-        console.print(ctxt.interp.env)
+    # if sym:
+    #     console.print("\n[bold yellow]Symbol Table[/bold yellow]\n")
+    #     console.print(ctxt.tb_sym())
 
     if execute:
-        ctxt.run()
+        if sym:
+            ctxt.run(sym)
+        else:
+            ctxt.run(None)
+
 
 if __name__ == "__main__":
     main()
