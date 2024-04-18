@@ -12,13 +12,13 @@ from bug_lang.context import Context
 
 # Define the command-line interface using Click decorators
 @click.command()
-@click.argument('input_file', type=click.File('r'))
-@click.option('-l', '--lex', is_flag=True, help='Display tokens from lexer')
-@click.option('-a', '--AST', is_flag=True, help='Display AST')
-@click.option('-D', '--dot', is_flag=True, help='Generate AST graph as DOT format')
+@click.argument("input_file", type=click.File("r"))
+@click.option("-l", "--lex", is_flag=True, help="Display tokens from lexer")
+@click.option("-a", "--AST", is_flag=True, help="Display AST")
+@click.option("-D", "--dot", is_flag=True, help="Generate AST graph as DOT format")
 @click.option("-s", "--sym", is_flag=True, help="Dump the symbol table")  # the Checker one
-@click.option('-R', '--exec', 'execute', is_flag=True, help='Execute the generated program')
-@click.option('-er', '--errors', is_flag=True, help='Export errors to HTML file')
+@click.option("-R", "--exec", "execute", is_flag=True, help="Execute the generated program")
+@click.option("-er", "--errors", is_flag=True, help="Export errors to HTML file")
 def main(input_file, lex, ast, dot, sym, execute, errors):
     console = Console(record=True)
 
@@ -46,9 +46,6 @@ def main(input_file, lex, ast, dot, sym, execute, errors):
         # Abrir el archivo en el navegador
         webbrowser.open("output.html")
 
-    
-
-
     if ast:
         console.print("\n\n[bold magenta]********** AST **********[/bold magenta]\n")
         ast_syntax = Syntax(str(ctxt.ast), "python", theme="ansi_dark", line_numbers=True)
@@ -69,8 +66,6 @@ def main(input_file, lex, ast, dot, sym, execute, errors):
         else:
             ctxt.run(None)
 
-
-
     if errors and ctxt.have_errors:
         console.print("\n[bold red]PARSER AND LEXER ERRORS[/bold red]")
         error_table = Table(title="Compilation Errors", show_header=True, header_style="bold magenta")
@@ -82,7 +77,6 @@ def main(input_file, lex, ast, dot, sym, execute, errors):
         with open("errors_output.html", "w", encoding="utf-8") as html_file:
             html_file.write(html_output)
         webbrowser.open("errors_output.html")
-
 
 
 if __name__ == "__main__":

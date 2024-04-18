@@ -3,11 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <style>
-.r1 {color: #008000; text-decoration-color: #008000; font-weight: bold}
-.r2 {color: #800000; text-decoration-color: #800000; font-weight: bold}
-.r3 {font-style: italic}
-.r4 {color: #800080; text-decoration-color: #800080; font-weight: bold}
-.r5 {color: #800000; text-decoration-color: #800000}
+.r1 {color: #800000; text-decoration-color: #800000; font-weight: bold}
+.r2 {font-style: italic}
+.r3 {color: #800080; text-decoration-color: #800080; font-weight: bold}
+.r4 {color: #800000; text-decoration-color: #800000}
 body {
     color: #000000;
     background-color: #ffffff;
@@ -15,20 +14,21 @@ body {
 </style>
 </head>
 <body>
-    <pre style="font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><code style="font-family:inherit">                        
-<span class="r1">################################ Bug-lang Compiler ################################</span>
-
-
-<span class="r2">PARSER AND LEXER ERRORS</span>
-<span class="r3">                                         Compilation Errors                                          </span>
-┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃<span class="r4"> Error Details                                                                                     </span>┃
-┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
-│<span class="r5"> 3: PARSER ERROR at line 3, column 14: Syntax error near &#x27;a&#x27;                                       </span>│
-│<span class="r5"> 5: LEXER ERROR at line 5, position 30: Illegal character &#x27;$  // CarÃ¡cter ilegal introducido aquÃ­ </span>│
-│<span class="r5"> &#x27;                                                                                                 </span>│
-│<span class="r5"> Unknown: PARSER ERROR: Syntax error at EOF                                                        </span>│
-└───────────────────────────────────────────────────────────────────────────────────────────────────┘
+    <pre style="font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><code style="font-family:inherit">
+<span class="r1">PARSER AND LEXER ERRORS</span>
+<span class="r2">                                         Compilation Errors                                         </span>
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃<span class="r3"> Error Details                                                                                    </span>┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│<span class="r4"> 2: PARSER ERROR at line 2, column 13: Syntax error near &#x27;a&#x27;                                      </span>│
+│<span class="r4"> 4: LEXER ERROR at line 4, position 29: Illegal character &#x27;$  // Carácter ilegal introducido aquí </span>│
+│<span class="r4">                                                                                                  </span>│
+│<span class="r4"> &#x27;                                                                                                </span>│
+│<span class="r4"> Unknown: PARSER ERROR: Syntax error at EOF                                                       </span>│
+│<span class="r4"> 4: LEXER ERROR at line 4, position 29: Illegal character &#x27;$  // Carácter ilegal introducido aquí </span>│
+│<span class="r4">                                                                                                  </span>│
+│<span class="r4"> &#x27;                                                                                                </span>│
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
 </code></pre>
 </body>
 </html>

@@ -270,4 +270,3 @@ class Parser(sly.Parser):
         else:
             error_message = "PARSER ERROR: Syntax error at EOF"
             self.ctxt.error(None, None, error_message)
-

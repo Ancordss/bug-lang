@@ -67,6 +67,7 @@ import sly
 class Lexer(sly.Lexer):
     def __init__(self, ctxt):
         self.ctxt = ctxt
+
     # Definición de Símbolos
     tokens = {
         # Palabras reservadas
@@ -137,7 +138,7 @@ class Lexer(sly.Lexer):
     # Ignoramos newline
     @_(r"\n+")
     def ignore_newline(self, t):
-        self.lineno += t.value.count('\n')
+        self.lineno += t.value.count("\n")
         self.last_token_end = 0  # Resetea la columna al comienzo de la nueva línea
 
     # Ignorar Comentarios de varias líneas
