@@ -10,6 +10,7 @@ from rich.markdown import Markdown
 from bug_lang.context import Context
 
 
+
 # Define the command-line interface using Click decorators
 @click.command()
 @click.argument("input_file", type=click.File("r"))
@@ -63,8 +64,10 @@ def main(input_file, lex, ast, dot, sym, execute, errors):
     if execute:
         if sym:
             ctxt.run(sym)
+
         else:
             ctxt.run(None)
+
 
     if errors and ctxt.have_errors:
         console.print("\n[bold red]PARSER AND LEXER ERRORS[/bold red]")

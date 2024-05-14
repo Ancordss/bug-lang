@@ -31,6 +31,7 @@ class Context:
 
     def run(self, sym):  # makes work the interpreter
         if not self.have_errors:
+            
             return self.interp.interpret(self.ast, sym)
 
     def find_source(self, node):  # it searches the line

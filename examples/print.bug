@@ -1,5 +1,13 @@
 // print
-var a=123;
-print(a)
-$  // Carácter ilegal introducido aquí
+//var a=123;
+//print(a)
+  // Carácter ilegal introducido aquí
 
+flick saludar(text) {
+  bee silk mensaje = "Hola Mundo";
+  spray(mensaje);
+  spray(text);
+}
+bee silk juanito="1234";
+
+saludar(juanito);

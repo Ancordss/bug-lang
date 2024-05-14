@@ -21,27 +21,139 @@ body {
 
 <span class="r2">********** TOKENS **********</span>
 
-╒════════╤═════════╤═══════════╕
-│ Type   │ Value   │   At line │
-╞════════╪═════════╪═══════════╡
-│ IDENT  │ var     │         <span class="r3">2</span> │
-├────────┼─────────┼───────────┤
-│ IDENT  │ a       │         <span class="r3">2</span> │
-├────────┼─────────┼───────────┤
-│ ASSIGN │ =       │         <span class="r3">2</span> │
-├────────┼─────────┼───────────┤
-│ NUM    │ <span class="r3">123</span>     │         <span class="r3">2</span> │
-├────────┼─────────┼───────────┤
-│ SEMI   │ ;       │         <span class="r3">2</span> │
-├────────┼─────────┼───────────┤
-│ IDENT  │ print   │         <span class="r3">3</span> │
-├────────┼─────────┼───────────┤
-│ LPAREN │ <span class="r4">(</span>       │         <span class="r3">3</span> │
-├────────┼─────────┼───────────┤
-│ IDENT  │ a       │         <span class="r3">3</span> │
-├────────┼─────────┼───────────┤
-│ RPAREN │ <span class="r4">)</span>       │         <span class="r3">3</span> │
-╘════════╧═════════╧═══════════╛
+╒══════════╤════════════╤═══════════╕
+│ Type     │ Value      │   At line │
+╞══════════╪════════════╪═══════════╡
+│ FUN      │ flick      │        <span class="r3">22</span> │
+├──────────┼────────────┼───────────┤
+│ IDENT    │ fib        │        <span class="r3">22</span> │
+├──────────┼────────────┼───────────┤
+│ LPAREN   │ <span class="r4">(</span>          │        <span class="r3">22</span> │
+├──────────┼────────────┼───────────┤
+│ IDENT    │ n          │        <span class="r3">22</span> │
+├──────────┼────────────┼───────────┤
+│ RPAREN   │ <span class="r4">)</span>          │        <span class="r3">22</span> │
+├──────────┼────────────┼───────────┤
+│ LBRACE   │ <span class="r4">{</span>          │        <span class="r3">22</span> │
+├──────────┼────────────┼───────────┤
+│ IF       │ spider     │        <span class="r3">23</span> │
+├──────────┼────────────┼───────────┤
+│ LPAREN   │ <span class="r4">(</span>          │        <span class="r3">23</span> │
+├──────────┼────────────┼───────────┤
+│ IDENT    │ n          │        <span class="r3">23</span> │
+├──────────┼────────────┼───────────┤
+│ LE       │ &lt;=         │        <span class="r3">23</span> │
+├──────────┼────────────┼───────────┤
+│ NUM      │ <span class="r3">1</span>          │        <span class="r3">23</span> │
+├──────────┼────────────┼───────────┤
+│ RPAREN   │ <span class="r4">)</span>          │        <span class="r3">23</span> │
+├──────────┼────────────┼───────────┤
+│ LBRACE   │ <span class="r4">{</span>          │        <span class="r3">23</span> │
+├──────────┼────────────┼───────────┤
+│ RETURN   │ return     │        <span class="r3">24</span> │
+├──────────┼────────────┼───────────┤
+│ NUM      │ <span class="r3">1</span>          │        <span class="r3">24</span> │
+├──────────┼────────────┼───────────┤
+│ SEMI     │ ;          │        <span class="r3">24</span> │
+├──────────┼────────────┼───────────┤
+│ RBRACE   │ <span class="r4">}</span>          │        <span class="r3">25</span> │
+├──────────┼────────────┼───────────┤
+│ ELSE     │ web        │        <span class="r3">25</span> │
+├──────────┼────────────┼───────────┤
+│ LBRACE   │ <span class="r4">{</span>          │        <span class="r3">25</span> │
+├──────────┼────────────┼───────────┤
+│ RETURN   │ return     │        <span class="r3">26</span> │
+├──────────┼────────────┼───────────┤
+│ IDENT    │ fib        │        <span class="r3">26</span> │
+├──────────┼────────────┼───────────┤
+│ LPAREN   │ <span class="r4">(</span>          │        <span class="r3">26</span> │
+├──────────┼────────────┼───────────┤
+│ IDENT    │ n          │        <span class="r3">26</span> │
+├──────────┼────────────┼───────────┤
+│ MINUS    │ -          │        <span class="r3">26</span> │
+├──────────┼────────────┼───────────┤
+│ NUM      │ <span class="r3">1</span>          │        <span class="r3">26</span> │
+├──────────┼────────────┼───────────┤
+│ RPAREN   │ <span class="r4">)</span>          │        <span class="r3">26</span> │
+├──────────┼────────────┼───────────┤
+│ PLUS     │ +          │        <span class="r3">26</span> │
+├──────────┼────────────┼───────────┤
+│ IDENT    │ fib        │        <span class="r3">26</span> │
+├──────────┼────────────┼───────────┤
+│ LPAREN   │ <span class="r4">(</span>          │        <span class="r3">26</span> │
+├──────────┼────────────┼───────────┤
+│ IDENT    │ n          │        <span class="r3">26</span> │
+├──────────┼────────────┼───────────┤
+│ MINUS    │ -          │        <span class="r3">26</span> │
+├──────────┼────────────┼───────────┤
+│ NUM      │ <span class="r3">2</span>          │        <span class="r3">26</span> │
+├──────────┼────────────┼───────────┤
+│ RPAREN   │ <span class="r4">)</span>          │        <span class="r3">26</span> │
+├──────────┼────────────┼───────────┤
+│ SEMI     │ ;          │        <span class="r3">26</span> │
+├──────────┼────────────┼───────────┤
+│ RBRACE   │ <span class="r4">}</span>          │        <span class="r3">27</span> │
+├──────────┼────────────┼───────────┤
+│ END_IF   │ end_spider │        <span class="r3">28</span> │
+├──────────┼────────────┼───────────┤
+│ RBRACE   │ <span class="r4">}</span>          │        <span class="r3">30</span> │
+├──────────┼────────────┼───────────┤
+│ FOR      │ fly        │        <span class="r3">32</span> │
+├──────────┼────────────┼───────────┤
+│ LPAREN   │ <span class="r4">(</span>          │        <span class="r3">32</span> │
+├──────────┼────────────┼───────────┤
+│ VAR      │ bee        │        <span class="r3">32</span> │
+├──────────┼────────────┼───────────┤
+│ INT_TYPE │ ant        │        <span class="r3">32</span> │
+├──────────┼────────────┼───────────┤
+│ IDENT    │ i          │        <span class="r3">32</span> │
+├──────────┼────────────┼───────────┤
+│ ASSIGN   │ =          │        <span class="r3">32</span> │
+├──────────┼────────────┼───────────┤
+│ NUM      │ <span class="r3">0</span>          │        <span class="r3">32</span> │
+├──────────┼────────────┼───────────┤
+│ SEMI     │ ;          │        <span class="r3">32</span> │
+├──────────┼────────────┼───────────┤
+│ IDENT    │ i          │        <span class="r3">32</span> │
+├──────────┼────────────┼───────────┤
+│ LT       │ &lt;          │        <span class="r3">32</span> │
+├──────────┼────────────┼───────────┤
+│ NUM      │ <span class="r3">21</span>         │        <span class="r3">32</span> │
+├──────────┼────────────┼───────────┤
+│ SEMI     │ ;          │        <span class="r3">32</span> │
+├──────────┼────────────┼───────────┤
+│ IDENT    │ i          │        <span class="r3">32</span> │
+├──────────┼────────────┼───────────┤
+│ ASSIGN   │ =          │        <span class="r3">32</span> │
+├──────────┼────────────┼───────────┤
+│ IDENT    │ i          │        <span class="r3">32</span> │
+├──────────┼────────────┼───────────┤
+│ PLUS     │ +          │        <span class="r3">32</span> │
+├──────────┼────────────┼───────────┤
+│ NUM      │ <span class="r3">1</span>          │        <span class="r3">32</span> │
+├──────────┼────────────┼───────────┤
+│ RPAREN   │ <span class="r4">)</span>          │        <span class="r3">32</span> │
+├──────────┼────────────┼───────────┤
+│ LBRACE   │ <span class="r4">{</span>          │        <span class="r3">32</span> │
+├──────────┼────────────┼───────────┤
+│ PRINT    │ spray      │        <span class="r3">33</span> │
+├──────────┼────────────┼───────────┤
+│ LPAREN   │ <span class="r4">(</span>          │        <span class="r3">33</span> │
+├──────────┼────────────┼───────────┤
+│ IDENT    │ fib        │        <span class="r3">33</span> │
+├──────────┼────────────┼───────────┤
+│ LPAREN   │ <span class="r4">(</span>          │        <span class="r3">33</span> │
+├──────────┼────────────┼───────────┤
+│ IDENT    │ i          │        <span class="r3">33</span> │
+├──────────┼────────────┼───────────┤
+│ RPAREN   │ <span class="r4">)</span>          │        <span class="r3">33</span> │
+├──────────┼────────────┼───────────┤
+│ RPAREN   │ <span class="r4">)</span>          │        <span class="r3">33</span> │
+├──────────┼────────────┼───────────┤
+│ SEMI     │ ;          │        <span class="r3">33</span> │
+├──────────┼────────────┼───────────┤
+│ RBRACE   │ <span class="r4">}</span>          │        <span class="r3">34</span> │
+╘══════════╧════════════╧═══════════╛
 </code></pre>
 </body>
 </html>

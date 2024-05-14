@@ -1,0 +1,6 @@
+label var juanito = "1234"
+label t1 starts call saludar, {'parameters': ['text']}
+label var mensaje = "Hola Mundo"
+label print "Hola Mundo"
+label print "1234"
+label t1 ends call saludar
