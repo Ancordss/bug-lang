@@ -6,6 +6,7 @@ from rich.syntax import Syntax
 from tabulate import tabulate
 from rich.table import Table
 from rich.markdown import Markdown
+#from bug_lang.ast_dot import DotGenerator
 
 from bug_lang.context import Context
 
@@ -54,8 +55,12 @@ def main(input_file, lex, ast, dot, sym, execute, errors):
 
     if dot:
         console.print("\n\n[bold cyan]DOT LANGUAGE[/bold cyan]\n")
-        dot = DotRender.render(ctxt.ast)  # render
-        console.print(dot)
+        print(ctxt.ast)
+        #dot_generator = DotGenerator()
+        #dot_representation = dot_generator.generate_dot(ast)
+
+        #dot = DotRender.render(ctxt.ast)  # render
+        #console.print(dot_representation)
 
     # if sym:
     #     console.print("\n[bold yellow]Symbol Table[/bold yellow]\n")

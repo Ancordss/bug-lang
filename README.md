@@ -61,3 +61,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - spray = print *
 - flick = fun *
 
+
+### dejar el tac code y pasar directo a GO luego crear las dataclass para hacer la comparacion

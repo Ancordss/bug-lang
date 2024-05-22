@@ -85,7 +85,7 @@ class Function:
         try:
             try:
                 parameters = { "parameters": [param for param in self.node.parameters],}
-                print(self.node)
+                #print(self.node)
             except:
                 parameters = ""
             
@@ -248,7 +248,7 @@ class Interpreter(Visitor):  # This is a visitor
     def visit(self, node: Block):
         # self.env = self.env.new_child() #think about it as a typewriter, it advances one row
         # and then you have to reset the pointer
-        print(node.stmts)
+        #print(node.stmts)
         for stmt in node.stmts:
             self.visit(stmt)
             
@@ -270,7 +270,7 @@ class Interpreter(Visitor):  # This is a visitor
         self.symbol_table[type(node).__name__] = {"type": Program, "scope": self.env.maps[0], "stmst": node.decl}
         # self.env = self.env.parents
 
-    def visit(self, node: ClassDeclaration):
+    def visit(self, node: ClassDeclaration): ## TODO: tac generator
         if node.sclass:
             sclass = self.visit(node.sclass)
             env = self.env.new_child()
@@ -293,7 +293,7 @@ class Interpreter(Visitor):  # This is a visitor
         }
         self.generator.add_line(f"define class {class_name} extends {sclass if sclass else 'None'} with methods {list(methods.keys())}")
 
-    def visit(self, node: FuncDeclaration):
+    def visit(self, node: FuncDeclaration): ## TODO: tac generator
         # func_label = f"func_{node.name}"
         # self.generator.add_line(f"label func {func_label}:")
 
@@ -328,9 +328,13 @@ class Interpreter(Visitor):  # This is a visitor
             "stmts": node.stmts,
         }
 
-    def visit(self, node: VarDeclaration):
+    def visit(self, node: VarDeclaration): ### need tac generator
         if node.expr:
-            expr = self.visit(node.expr)
+            print(f"node var d {node}, {node.expr}")
+            if isinstance(node.expr, Literal):
+                expr = self.visit(node.expr)
+            else:
+                expr = self.visit_tac(node.expr)
             tac_line = f"label var {node.name} = {expr}"
         else:
             expr = None
@@ -346,23 +350,26 @@ class Interpreter(Visitor):  # This is a visitor
             "Expression": node.expr,
         }
 
-    def visit(self, node: Print):
-        print(self.visit(node.expr))
-        expr_value = self.visit(node.expr)
-    
+    def visit(self, node: Print): #TODO: tac generator
+        try:
+            print(f"asdffs {node.expr}")
+            expr_value = self.visit(node.expr)
+        except:
+            expr_value = 'nil'
         # Generar una línea de TAC que representa la operación de impresión
         # Asumiendo que tenemos una función o instrucción 'print' en el destino de TAC
         self.generator.add_line(f"label print {expr_value}")
         self.symbol_table["print"] = {"type": Print, "scope": self.env.maps[0], "Expression": node.expr}
 
-    def visit(self, node: WhileStmt):
+    def visit(self, node: WhileStmt): ## TODO: need tac genetarot
         label_loop_start = self.generator.generate_temp()
         label_loop_end = self.generator.generate_temp()
         
-        self.generator.add_line(f"label while {label_loop_start}:")
+        self.generator.add_line(f"label while {label_loop_start}:v")
 
         # Evaluar la condición del bucle
-        condition = self.visit(node.cond)
+        condition = self.visit_tac(node.cond)
+        
         self.generator.add_line(f"if not {condition} goto {label_loop_end}")
 
         # Visitar el cuerpo del bucle
@@ -371,17 +378,15 @@ class Interpreter(Visitor):  # This is a visitor
         # Verificar si hay instrucciones de control de flujo (break o continue)
         # Aquí se debe manejar el control del flujo, pero en TAC se manejará a nivel de optimización de saltos
         # Puesto que no implementamos directamente el control aquí, simplificamos el flujo para TAC
-        self.generator.add_line(f"goto {label_loop_start}")
-
-        # Marcar el final del bucle
-        self.generator.add_line(f"label while end {label_loop_end}:")
-        self.pop_loop_labels()
+        
+        
 
 
         
         global ThereIsContinue
         global ThereIsBreak
 
+        
         while _is_truthy(self.visit(node.cond)):
             ThereIsContinue = False
             ThereIsBreak = False
@@ -392,6 +397,12 @@ class Interpreter(Visitor):  # This is a visitor
                 continue
             else:
                 pass
+        
+        self.generator.add_line(f"goto {label_loop_start}")
+
+        # Marcar el final del bucle
+        self.generator.add_line(f"label while end {label_loop_end}")
+        
         self.symbol_table["while"] = {
             "type": WhileStmt,
             "scope": self.env.maps[0],
@@ -409,7 +420,7 @@ class Interpreter(Visitor):  # This is a visitor
             raise Exception("Syntax error: 'continue' not within a loop")
         self.symbol_table[type(node).__name__] = {"type": Continue, "scope": self.env.maps[0], "name": node.name}
 
-    def visit(self, node: Break):
+    def visit(self, node: Break): # TODO:### need tac generator
         global ThereIsBreak
         ThereIsBreak = True
         if self.loop_end_label:
@@ -420,39 +431,46 @@ class Interpreter(Visitor):  # This is a visitor
 
     #########################################################
 
-    def visit(self, node: ForStmt):
-        
+    def visit(self, node: ForStmt): ## TODO: need tac genereator
+        print('llegue aqui')
         self.visit(node.for_init)
         
         # Generar etiquetas para el control del bucle
         label_loop_start = self.generator.generate_temp()  # Etiqueta para el inicio del bucle
         label_continue = self.generator.generate_temp()    # Etiqueta para la parte de incremento
         label_loop_end = self.generator.generate_temp()    # Etiqueta para el final del bucle
+        
+        
 
         # Empujar las etiquetas a la pila para manejar 'break' y 'continue'
         self.push_loop_labels(label_continue, label_loop_end)
 
         # Marcar el inicio del bucle con la etiqueta correspondiente
-        self.generator.add_line(f"label for {label_loop_start}:")
+        self.generator.add_line(f"{label_loop_start} for:")
 
         # Evaluar la condición del bucle for y preparar el salto basado en ella
+        print(node.for_cond)
         condition = self.visit(node.for_cond)
+        condition = self.visit_tac(node.for_cond)
         self.generator.add_line(f"if not {condition} goto {label_loop_end}")
 
         # Visitar el cuerpo del bucle
+       
         self.visit(node.for_body)
+        
 
         # Etiqueta para 'continue', se coloca antes del incremento
-        self.generator.add_line(f"label {label_continue}:")
+        self.generator.add_line(f"label continue {label_continue}:")
 
         # Generar código para el incremento
+        print(node.for_increment)
         self.visit(node.for_increment)
 
         # Salto al inicio del bucle para continuar la iteración
         self.generator.add_line(f"goto {label_loop_start}")
 
         # Marcar el final del bucle con la etiqueta correspondiente
-        self.generator.add_line(f"label for end{label_loop_end}:")
+        self.generator.add_line(f"label for end {label_loop_end}:")
 
         # Retirar las etiquetas de la pila al salir del bucle
         self.pop_loop_labels()
@@ -486,27 +504,30 @@ class Interpreter(Visitor):  # This is a visitor
         return self.generator.get_code()
 
 
-    def visit(self, node: IfStmt):
+    def visit(self, node: IfStmt):## TODO: need tack generator
+        #print(node.cond)
         
-        test = self.visit(node.cond)
         label_start = self.generator.generate_temp() 
         label_true = self.generator.generate_temp()  # Etiqueta para la ejecución verdadera
         label_end = self.generator.generate_temp()  # Etiqueta final
-       
-        self.generator.add_line(f"label if {label_start}")
+        test1 = self.visit_tac(node.cond)
+        self.visit(node.cond)
+        print(f"asdf {node.altr}")
         # Condición y salto si es verdadero
-        self.generator.add_line(f"if {test} goto {label_true}")
+        self.generator.add_line(f"{label_start} if {test1} goto {label_true}")
             
-        if _is_truthy(test):
-            self.generator.add_line(f"label {label_true}:")
-            self.visit(node.cons)
+        #if _is_truthy(test):
+        
+        self.generator.add_line(f"{label_true}:v")
+        self.visit(node.cons)
             
-        elif node.altr:
-            self.generator.add_line(f"goto {label_end}")
-            self.visit(node.altr)
+        # elif node.altr:
+        self.generator.add_line(f"else goto {label_end}")
+        self.generator.add_line(f"{label_end}:v")
+        self.visit(node.altr)
             
             
-        self.generator.add_line(f"label if end {label_end}:")
+        self.generator.add_line(f"label if end {label_start}:")
          
         self.symbol_table["if"] = {
             "type": IfStmt,
@@ -516,9 +537,10 @@ class Interpreter(Visitor):  # This is a visitor
             "alternative": node.altr,
         }
 
-    def visit(self, node: Return):
+    def visit(self, node: Return): #TODO: tac generator
+        self.generator.add_line(f"return {self.visit(node.expr)}")
         self.symbol_table["Return"] = {"type": Return, "scope": self.env.maps[0], "Expression": node.expr}
-        raise ReturnException(self.visit(node.expr))
+        #raise ReturnException(self.visit(node.expr))
 
     def visit(self, node: ExprStmt):
         self.visit(node.expr)
@@ -527,11 +549,14 @@ class Interpreter(Visitor):  # This is a visitor
     def visit(self, node: Literal):
         return node.value
 
-    def visit(self, node: Binary):
+    def visit(self, node: Binary): ############ need tac generator
         left = self.visit(node.left)
         right = self.visit(node.right)
+        #result = self.generator.generate_temp()
+        #self.generator.add_line(f"{result} = {node.left} {node.op} {node.right}")
         # result = self.generator.generate_temp()
         # self.generator.add_line(f"{result} = {left} {node.op} {right}")
+
         
         self.symbol_table[type(node).__name__] = {
             "type": Binary,
@@ -540,39 +565,40 @@ class Interpreter(Visitor):  # This is a visitor
             "left": node.left,
             "right": node.right,
         }
-        if node.op == "+":
-            (isinstance(left, str) and isinstance(right, str)) or self._check_numeric_operands(node, left, right)
-            return left + right
-        elif node.op == "-":
-            self._check_numeric_operands(node, left, right)
-            return left - right
-        elif node.op == "*":
-            self._check_numeric_operands(node, left, right)
-            return left * right
-        elif node.op == "/":
-            self._check_numeric_operands(node, left, right)
-            return left / right
-        elif node.op == "%":
-            self._check_numeric_operands(node, left, right)
-            return left % right
-        elif node.op == "==":
-            return left == right
-        elif node.op == "!=":
-            return left != right
-        elif node.op == "<":
-            self._check_numeric_operands(node, left, right)
-            return left < right
-        elif node.op == ">":
-            self._check_numeric_operands(node, left, right)
-            return left > right
-        elif node.op == "<=":
-            self._check_numeric_operands(node, left, right)
-            return left <= right
-        elif node.op == ">=":
-            self._check_numeric_operands(node, left, right)
-            return left >= right
-        else:
-            raise NotImplementedError(f"Interp Error. Wrong Operator {node.op}")
+        # if node.op == "+":
+        #     (isinstance(left, str) and isinstance(right, str)) or self._check_numeric_operands(node, left, right)
+        #     return left + right
+        # elif node.op == "-":
+        #     self._check_numeric_operands(node, left, right)
+        #     return left - right
+        # elif node.op == "*":
+        #     self._check_numeric_operands(node, left, right)
+        #     return left * right
+        # elif node.op == "/":
+        #     self._check_numeric_operands(node, left, right)
+        #     return left / right
+        # elif node.op == "%":
+        #     self._check_numeric_operands(node, left, right)
+        #     return left % right
+        # elif node.op == "==":
+        #     return left == right
+        # elif node.op == "!=":
+        #     return left != right
+        # elif node.op == "<":
+        #     self._check_numeric_operands(node, left, right)
+        #     return left < right
+        # elif node.op == ">":
+        #     self._check_numeric_operands(node, left, right)
+        #     return left > right
+        # elif node.op == "<=":
+        #     self._check_numeric_operands(node, left, right)
+        #     return left <= right
+        # elif node.op == ">=":
+        #     self._check_numeric_operands(node, left, right)
+        #     return left >= right
+        # else:
+        #     raise NotImplementedError(f"Interp Error. Wrong Operator {node.op}")
+        
 
     def visit(self, node: Logical):
         left = self.visit(node.left)
@@ -598,7 +624,7 @@ class Interpreter(Visitor):  # This is a visitor
             self.generator.add_line(f"goto {label_end}")
             self.generator.add_line(f"label {label_true}:")
             self.generator.add_line(f"{result} = 1")  # True
-            return left if _is_truthy(left) else self.visit(node.right)
+            #return left if _is_truthy(left) else self.visit(node.right)
         if node.op == "&&":
              # Si 'left' es falso, entonces el resultado es falso
             self.generator.add_line(f"if not {left} goto {label_true}")
@@ -608,10 +634,11 @@ class Interpreter(Visitor):  # This is a visitor
             self.generator.add_line(f"goto {label_end}")
             self.generator.add_line(f"label {label_true}:")
             self.generator.add_line(f"{result} = 0")  # False
-            return self.visit(node.right) if _is_truthy(left) else left
+            
+            #return self.visit(node.right) if _is_truthy(left) else left
         raise NotImplementedError(f"Interp Error. Wrong Operator {node.op}")
 
-    def visit(self, node: Unary):
+    def visit(self, node: Unary): #### need tac generator
         self.symbol_table[type(node).__name__] = {
             "type": Unary,
             "scope": self.env.maps[0],
@@ -623,47 +650,53 @@ class Interpreter(Visitor):  # This is a visitor
         if node.op == "-":
             self._check_numeric_operand(node, expr)
             self.generator.add_line(f"label unary {result} = -{expr}")
-            return -expr
+            #return -expr
         elif node.op == "!":
             self.generator.add_line(f"label unary {result} = !{expr}")
-            return not _is_truthy(expr)
+            #return not _is_truthy(expr)
         
         else:
             raise NotImplementedError(f"Interp Error. Wrong Operator {node.op}")
 
     def visit(self, node: Grouping):
         self.symbol_table[type(node).__name__] = {"type": Grouping, "scope": self.env.maps[0], "Expression": node.expr}
-        return self.visit(node.expr)
+        #return self.visit(node.expr)
 
-    def visit(self, node: Assign):
+    def visit(self, node: Assign): #### need tac generator
         expr = 0
-        expr_value = self.visit(node.expr)
+        self.visit(node.expr)
+        try:
+            expr_value = self.visit_tac(node.expr)
+        except:
+            expr_value = self.visit(node.expr)
+        tag = self.generator.generate_temp()
+        self.generator.add_line(f"{tag} assign {node.name} {node.op} {expr_value}")
 
     # Crear una variable temporal para el resultado de la expresión
-        result_temp = self.generator.generate_temp()
-        if node.op == "=":
-            self.generator.add_line(f"label assign {node.name} = {expr_value}")
-            expr = self.visit(node.expr)
-        elif node.op == "+=":
-            self.generator.add_line(f"label assign {result_temp} = {node.name} + {expr_value}")
-            self.generator.add_line(f"label assign {node.name} = {result_temp}")
-            expr = self.env[node.name] + self.visit(node.expr)
-        elif node.op == "-=":
-            self.generator.add_line(f"label assign {result_temp} = {node.name} - {expr_value}")
-            self.generator.add_line(f"label assign {node.name} = {result_temp}")
-            expr = self.env[node.name] - self.visit(node.expr)
-        elif node.op == "*=":
-            self.generator.add_line(f"label assign {result_temp} = {node.name} * {expr_value}")
-            self.generator.add_line(f"label assign {node.name} = {result_temp}")
-            expr = self.env[node.name] * self.visit(node.expr)
-        elif node.op == "/=":
-            self.generator.add_line(f"label assign {result_temp} = {node.name} / {expr_value}")
-            self.generator.add_line(f"label assign {node.name} = {result_temp}")
-            expr = self.env[node.name] / self.visit(node.expr)
-        elif node.op == "%=":
-            self.generator.add_line(f"label assign {result_temp} = {node.name} % {expr_value}")
-            self.generator.add_line(f"label assign {node.name} = {result_temp}")
-            expr = self.env[node.name] % self.visit(node.expr)
+        # result_temp = self.generator.generate_temp()
+        # if node.op == "=":
+        #     #self.generator.add_line(f"label assign {node.name} = {expr_value}")
+        #     expr = self.visit(node.expr)
+        # elif node.op == "+=":
+        #     #self.generator.add_line(f"label assign {result_temp} = {node.name} + {expr_value}")
+        #     #self.generator.add_line(f"label assign {node.name} = {result_temp}")
+        #     expr = self.env[node.name] + self.visit(node.expr)
+        # elif node.op == "-=":
+        #     #self.generator.add_line(f"label assign {result_temp} = {node.name} - {expr_value}")
+        #     #self.generator.add_line(f"label assign {node.name} = {result_temp}")
+        #     expr = self.env[node.name] - self.visit(node.expr)
+        # elif node.op == "*=":
+        #     #self.generator.add_line(f"label assign {result_temp} = {node.name} * {expr_value}")
+        #     #self.generator.add_line(f"label assign {node.name} = {result_temp}")
+        #     expr = self.env[node.name] * self.visit(node.expr)
+        # elif node.op == "/=":
+        #     #self.generator.add_line(f"label assign {result_temp} = {node.name} / {expr_value}")
+        #     #self.generator.add_line(f"label assign {node.name} = {result_temp}")
+        #     expr = self.env[node.name] / self.visit(node.expr)
+        # elif node.op == "%=":
+        #     #self.generator.add_line(f"label assign {result_temp} = {node.name} % {expr_value}")
+        #     #self.generator.add_line(f"label assign {node.name} = {result_temp}")
+        #     expr = self.env[node.name] % self.visit(node.expr)
         self.env[node.name] = expr
         self.symbol_table[type(node).__name__] = {
             "type": Assign,
@@ -672,13 +705,15 @@ class Interpreter(Visitor):  # This is a visitor
             "Expression": node.expr,
         }
 
-    def visit(self, node: AssignPostfix):
+    def visit(self, node: AssignPostfix): ## need tac generator
         temp = self.visit(node.expr)
+        tag = self.generator.generate_temp()
         expr = 0
-        if node.op == "++":
-            expr = self.visit(node.expr) + 1
-        else:
-            expr = self.visit(node.expr) - 1
+        self.generator.add_line(f"{tag} {node.expr} {node.op} ")
+        # if node.op == "++":
+        #     expr = self.visit(node.expr) + 1
+        # else:
+        #     expr = self.visit(node.expr) - 1
         self.env[node.expr.name] = expr
         self.symbol_table["AssignPostfix"] = {
             "type": AssignPostfix,
@@ -686,7 +721,7 @@ class Interpreter(Visitor):  # This is a visitor
             "op": node.op,
             "Expression": node.expr,
         }
-        return temp
+        #return temp
 
     def visit(self, node: AssignPrefix):
         expr = 0
@@ -701,9 +736,9 @@ class Interpreter(Visitor):  # This is a visitor
             "op": node.op,
             "Expression": node.expr,
         }
-        return expr
+        #return expr
 
-    def visit(self, node: Call):
+    def visit(self, node: Call): ## TODO: tac generator
         self.symbol_table["Call"] = {"type": Call, "scope": self.env.maps[0], "func": node.func, "Arguments": node.args}
         callee = self.visit(node.func)
         if not callable(callee):
@@ -722,7 +757,7 @@ class Interpreter(Visitor):  # This is a visitor
         self.symbol_table["Variable"] = {"type": Variable, "scope": self.env.maps[0], "name": node.name}
         return self.env[node.name] 
 
-    def visit(self, node: Set):
+    def visit(self, node: Set): #TODO: tac generator
         self.symbol_table["Set"] = {
             "type": Set,
             "scope": self.env.maps[0],
@@ -738,7 +773,7 @@ class Interpreter(Visitor):  # This is a visitor
         else:
             self.error(node.obj, f"Interp Error{self.ctxt.find_source(node.obj)!r} is not an instance")
 
-    def visit(self, node: Get):
+    def visit(self, node: Get): #TODO: tac generator
         self.symbol_table["Get"] = {"type": Get, "scope": self.env.maps[0], "object": node.obj, "name": node.name}
         obj = self.visit(node.obj)
         if isinstance(obj, Instance):
@@ -749,10 +784,10 @@ class Interpreter(Visitor):  # This is a visitor
         else:
             self.error(node.obj, f"Interp Error{self.ctxt.find_source(node.obj)!r}  is not an instance")
 
-    def visit(self, node: This):
+    def visit(self, node: This): #TODO: tac generator
         return self.env["this"]
 
-    def visit(self, node: Super):
+    def visit(self, node: Super):#TODO: tac generator
         distance = self.localmap[id(node)]
         sclass = self.env.maps[distance]["super"]
         this = self.env.maps[distance - 1]["this"]
@@ -761,3 +796,12 @@ class Interpreter(Visitor):  # This is a visitor
             self.error(node.object, f"Interp Error. Not defined property {node.name!r}")
         self.symbol_table["Super"] = {"type": Super, "scope": self.env.maps[0], "name": node.name}
         return method.bind(this)
+    
+    
+    def visit_tac(self, node: Binary): ############ need tac generator
+        left = self.visit(node.left)
+        right = self.visit(node.right)
+        #self.generator.add_line(f"{result} = {left} {node.op} {right}")
+        print(f"node.op {node.left}")
+        return f"{left} {node.op} {right}"
+    

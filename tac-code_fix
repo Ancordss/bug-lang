@@ -1,21 +1,17 @@
 label var juanito = "1234"
 label t1 starts call saludar, {'parameters': ['text']}
-label var mensaje = "Hello kitty"
-label print "Hello kitty"
+label var mensaje = "Hola Mundo"
+label print "Hola Mundo"
 label print "1234"
-return "hola mundo"
 label t1 ends call saludar
-label var a = 112
-label var b = 1342
-label var e = 4324
-label var t = 5435
-label var c = 112 + 1342
-label print 112 + 1342
-t2 if 112 + 1342 == 2 goto t3
+label var a = 1
+label var b = 1
+label var c = 1 + 1 
+label print 1 + 1 << aqui debereia de ir una c
+t2 if 1 + 1 == 2 goto t3 << aqui tambien 
 t3:v
 label print "yei"
-else goto t4
-t4:v
+else goto t4:v
 label print "no yei"
 label if end t2:
 label var i = 0
@@ -23,7 +19,7 @@ t5 for:
 if not 0 < 21 goto t7
 label print 0
 label continue t6:
-t8 Variable(name='i') ++ 
+t8 Variable(name='i') ++ <<Varibable arreglar (for)
 goto t5
 label for end t7:
 label var i = 0
