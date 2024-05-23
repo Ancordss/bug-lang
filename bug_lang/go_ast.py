@@ -55,6 +55,7 @@ class ClassDeclaration(Declaration):
 @dataclass
 class FuncDeclaration(Declaration):
     name: str
+    return_type: str
     parameters: List[Expression] = field(default_factory=list)
     stmts: List[Statement] = field(default_factory=list)
 
@@ -165,6 +166,7 @@ class Grouping(Expression):  # no es obligatorio
 @dataclass
 class Variable(Expression):
     name: str
+    var_type: str
 
 
 @dataclass

@@ -1,9 +1,9 @@
 # cinterp.py
 """
-Tree-walking interpreter
-TODO:here we need to convert all to go code
+Tree-walking for generate symbols tables
 """
 import math
+import subprocess
 import webbrowser
 from collections import ChainMap
 
@@ -13,6 +13,7 @@ from rich.table import Table
 
 from bug_lang.checker import Checker
 from bug_lang.go_ast import *
+from bug_lang.go_generator import *
 from bug_lang.utils.stdlib import *
 
 
@@ -30,7 +31,7 @@ class ReturnException(Exception):
         self.value = value  # it sets the value for exception
 
 
-class MiniCExit(BaseException):
+class BugLangExit(BaseException):
     pass
 
 
@@ -177,19 +178,27 @@ class Interpreter(Visitor):  # This is a visitor
 
     def error(self, position, message):
         self.ctxt.error(position, message)
-        raise MiniCExit()
+        raise BugLangExit()
 
     # Punto de entrada alto-nivel
     def interpret(self, node, sym):
         try:
             Checker.check(node, self.ctxt)  # First, you must call the Checker
             if not self.ctxt.have_errors:
-                # print("Starting interpreting \n")
                 self.visit(node)
+                go_code = convert_ast_to_go(node)
+                with open("output.go", "w") as f:
+                    f.write(go_code)
+                print("Go code generated successfully.")
+                subprocess.run(["gofmt", "-w", "."], check=True)
+                subprocess.run(["go", "run", "output.go"], check=True)
+
+                # print("Starting interpreting \n")
+                # self.visit(node)
                 # print("\nInterpreting finished")
             else:
                 print("\n The interpreter could not start because the Checker returned errors")
-        except MiniCExit as e:
+        except BugLangExit as e:
             pass
         finally:
             if sym:
@@ -242,13 +251,22 @@ class Interpreter(Visitor):  # This is a visitor
     def visit(self, node: FuncDeclaration):
         func = Function(node, self.env)
         self.env[node.name] = func
-        self.symbol_table[type(node).__name__] = {
-            "type": FuncDeclaration,
-            "scope": self.env.maps[0],
-            "name": node.name,
-            "parameters": [param for param in node.parameters],
-            "stmts": node.stmts,
-        }
+        if node.parameters is not None:
+            self.symbol_table[type(node).__name__] = {
+                "type": FuncDeclaration,
+                "scope": self.env.maps[0],
+                "name": node.name,
+                "parameters": [param for param in node.parameters],
+                "stmts": node.stmts,
+            }
+        else:
+            self.symbol_table[type(node).__name__] = {
+                "type": FuncDeclaration,
+                "scope": self.env.maps[0],
+                "name": node.name,
+                "parameters": "",
+                "stmts": node.stmts,
+            }
 
     def visit(self, node: VarDeclaration):
         if node.expr:
@@ -264,7 +282,6 @@ class Interpreter(Visitor):  # This is a visitor
         }
 
     def visit(self, node: Print):
-        print(self.visit(node.expr))
         self.symbol_table["print"] = {"type": Print, "scope": self.env.maps[0], "Expression": node.expr}
 
     def visit(self, node: WhileStmt):

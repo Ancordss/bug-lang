@@ -146,10 +146,26 @@ class Checker(Visitor):
         # to allow recursivity
         # self._add_symbol(node, env)
 
+        # the inner environment must know about the function itself to allow recursivity
+        # self._add_symbol(node.ident, env)
+
         if node.parameters:
-            for param in node.parameters:
-                self._add_symbol(Variable(param), env)
+            for param_name, param_type in node.parameters:
+                variable = Variable(param_name, param_type)
+                env.add(param_name, variable)
+
         self.visit(node.stmts, env)
+
+        # if node.parameters:
+        #     print(node.parameters)
+        #     print(node)
+        #     for param in node.parameters:
+        #         self._add_symbol(Variable(param), env)
+        # self.visit(node.stmts, env)
+
+    def _add_symbol(self, name, env):
+        # This method should handle adding the symbol to the environment
+        env.add(name, "function")
 
     def visit(self, node: VarDeclaration, env: Symtab):
         """

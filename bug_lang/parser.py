@@ -196,7 +196,7 @@ class Parser(sly.Parser):
 
     @_("IDENT")
     def factor(self, p):
-        return Variable(p.IDENT)
+        return Variable(p.IDENT, None)
 
     @_("SUPER POINT IDENT")
     def factor(self, p):
@@ -229,13 +229,19 @@ class Parser(sly.Parser):
 
     ##################################################################################################
 
-    @_("IDENT LPAREN [ parameters ] RPAREN block")
+    @_("IDENT LPAREN [ parameters ] RPAREN { type } block")
     def function(self, p):
-        return FuncDeclaration(p.IDENT, p.parameters, p.block)
+        return FuncDeclaration(p.IDENT, p.type, p.parameters, p.block)
 
-    @_("IDENT { COMMA IDENT }")
+    # Definición de parámetros con tipos
+    @_("IDENT COLON type { COMMA IDENT COLON type }")
     def parameters(self, p):
-        return [p.IDENT0] + p.IDENT1
+        first_param = (p.IDENT0, p.type0)
+        try:
+            other_params = [(p[i], p[i + 2]) for i in range(3, len(p), 4)]
+            return [first_param] + other_params
+        except:
+            return [first_param]
 
     @_("expression { COMMA expression }")
     def arguments(self, p):
@@ -245,6 +251,18 @@ class Parser(sly.Parser):
         # Registramos el token
         self.log_token(tok)
         return tok
+
+    @_("STRING_TYPE")
+    def type(self, p):
+        return p.STRING_TYPE
+
+    @_("INT_TYPE")
+    def type(self, p):
+        return p.INT_TYPE
+
+    @_("FLOAT_TYPE")
+    def type(self, p):
+        return p.FLOAT_TYPE
 
     # def save_token_log_as_html(self, output_file="token_log.html"):
     #     console = Console(record=True)

@@ -1,5 +1,54 @@
 // print
-var a=123;
-print(a)
-$  // Carácter ilegal introducido aquí
+//var a=123;
+//print(a)
+  // Carácter ilegal introducido aquí
+
+flick saludar(text: silk) silk {
+  bee silk mensaje = "Hello kitty";
+  spray(mensaje);
+  spray(text);
+  return "hola mundo";
+}
+
+flick main(){
+
+    bee silk juanito="1234";
+
+    spray(saludar(juanito));
+
+
+
+    bee ant a=112;
+    bee ant b=1342;
+    bee ant e=4324;
+    bee ant t=5435;
+
+    bee ant c=a+b+e+t;
+
+
+    spray(c);
+
+    spider (c==2){
+    spray("yei");
+    }web{
+    spray("no yei");
+    }
+    end_spider
+
+
+
+    fly(bee ant i = 0; i < 21; i++){
+    spray(i);
+    }
+
+    bee ant y=0;
+    looper(y<=5) {
+    spray("lopping");
+    y+=1;
+    }
+
+
+}
+
+main();
 

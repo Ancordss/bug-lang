@@ -71,6 +71,7 @@ class Lexer(sly.Lexer):
     # Definición de Símbolos
     tokens = {
         # Palabras reservadas
+        COLON,
         FUN,
         VAR,
         PRINT,
@@ -169,6 +170,7 @@ class Lexer(sly.Lexer):
     RPAREN = r"\)"
     LBRACE = r"{"
     RBRACE = r"}"
+    COLON = r":"
     # LSQBRA =r'\['
     # RSQBRA =r'\]'
     LE = r"<="
@@ -210,7 +212,7 @@ class Lexer(sly.Lexer):
     @_(r'".*"')
     def STRING(self, t):
         t.value = str(t.value)
-        print(t)
+        # print(t)
         return t
 
     @_(r"(\d+\.\d*)|(\.\d+)")
@@ -222,7 +224,7 @@ class Lexer(sly.Lexer):
     @_(r"\d+")
     def NUM(self, t):
         t.value = int(t.value)
-        print(t)
+        # print(t)
         return t
 
     def error(self, value):

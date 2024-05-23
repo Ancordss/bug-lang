@@ -40,7 +40,7 @@ lint = "ruff check ."
 format = "ruff format ."
 type_check = "pyright ."
 test = "pytest"
-compile = "python3 buglang.py -R examples/test.bug"
+compile = "python3 buglang.py -R"
 
 [build-system]
 requires = ["poetry-core"]
