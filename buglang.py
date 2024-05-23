@@ -2,10 +2,10 @@ import webbrowser
 
 import click
 from rich.console import Console
-from rich.syntax import Syntax
-from tabulate import tabulate
-from rich.table import Table
 from rich.markdown import Markdown
+from rich.syntax import Syntax
+from rich.table import Table
+from tabulate import tabulate
 
 from bug_lang.context import Context
 
