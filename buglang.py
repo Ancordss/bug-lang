@@ -67,7 +67,7 @@ def main(input_file, lex, ast, dot, sym, execute, errors):
             ctxt.run(None)
 
     if errors and ctxt.have_errors:
-        console.print("\n[bold red]PARSER AND LEXER ERRORS[/bold red]")
+        console.print("\n[bold red]PARSER & LEXER ERRORS[/bold red]")
         error_table = Table(title="Compilation Errors", show_header=True, header_style="bold magenta")
         error_table.add_column("Error Details", style="red")
         for error in ctxt.errors:

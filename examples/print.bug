@@ -19,7 +19,7 @@ flick main(){
 
 
     bee ant a=112;
-    bee ant b=1342;
+    bee ant b=456;
     bee ant e=4324;
     bee ant t=5435;
 

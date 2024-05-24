@@ -44,6 +44,9 @@ class CallError(Exception):
 class AttributeError(Exception):
     pass
 
+class CallError(Exception):
+    pass
+
 
 class Function:
     def __init__(self, node, env):  # it receives the node and a context
@@ -168,37 +171,66 @@ class Interpreter(Visitor):  # This is a visitor
         if isinstance(left, (int, float)) and isinstance(right, (int, float)):
             return True
         else:
-            self.error(node, f"Interp Error. In '{node.op}' the operands must be numerical type")
+            left_type = type(left).__name__
+            right_type = type(right).__name__
+            left_value = repr(left)
+            right_value = repr(right)
+            self.error(
+                node,
+                f"Semantic Error. The operation '{node.op}' cannot be performed because the variables are of incompatible types. "
+                f"Left operand: {left_value} (type: {left_type}), Right operand: {right_value} (type: {right_type})."
+            )
 
     def _check_numeric_operand(self, node, value):
         if isinstance(value, (int, float)):
             return True
         else:
-            self.error(node, f"Interp Error. In '{node.op}' the operand must be numerical type")
+            value_type = type(value).__name__
+            value_repr = repr(value)
+            raise CallError(
+                f"Semantic Error. The operation '{node.op}' cannot be performed because the variable is of an incompatible type. "
+                f"Operand: {value_repr} (type: {value_type})."
+            )
+
 
     def error(self, position, message):
-        self.ctxt.error(position, message)
+        console = Console(record=True)  # Crea un objeto Console que pueda grabar la salida
+
+        # Usar métodos de rich para imprimir (esto no aparecerá en la consola estándar)
+        console.print(message)
+        #console.print(position)
+
+        # Exportar a HTML
+        html = console.export_html()
+        with open("error_output.html", "w") as f:  # Asegúrate de usar el modo de escritura correcto
+            f.write(html)
+        webbrowser.open("error_output.html")
+            
+            #self.ctxt.error(position, message)
         raise BugLangExit()
 
     # Punto de entrada alto-nivel
     def interpret(self, node, sym):
         try:
-            Checker.check(node, self.ctxt)  # First, you must call the Checker
+            Checker.check(node, self.ctxt)
             if not self.ctxt.have_errors:
-                self.visit(node)
+                try:
+                    self.visit(node)
+                except CallError as e:
+                    print(str(e))
+                    return
                 go_code = convert_ast_to_go(node)
                 with open("output.go", "w") as f:
                     f.write(go_code)
                 print("Go code generated successfully.")
-                subprocess.run(["gofmt", "-w", "."], check=True)
-                subprocess.run(["go", "run", "output.go"], check=True)
-
-                # print("Starting interpreting \n")
-                # self.visit(node)
-                # print("\nInterpreting finished")
+                try:
+                    subprocess.run(["gofmt", "-w", "."], check=True)
+                    subprocess.run(["go", "run", "output.go"], check=True)
+                except subprocess.CalledProcessError as e:
+                    print(f"Go runtime error: {e}")
             else:
-                print("\n The interpreter could not start because the Checker returned errors")
-        except BugLangExit as e:
+                print("\nThe interpreter could not start because the Checker returned errors")
+        except BugLangExit:
             pass
         finally:
             if sym:
@@ -412,7 +444,11 @@ class Interpreter(Visitor):  # This is a visitor
             self._check_numeric_operands(node, left, right)
             return left >= right
         else:
-            raise NotImplementedError(f"Interp Error. Wrong Operator {node.op}")
+            left_type = type(left).__name__
+            right_type = type(right).__name__
+            raise NotImplementedError(
+                f"Semantic Error. Operator '{node.op}' is not implemented for operands of type '{left_type}' and '{right_type}'."
+            )
 
     def visit(self, node: Logical):
         left = self.visit(node.left)
@@ -427,7 +463,12 @@ class Interpreter(Visitor):  # This is a visitor
             return left if _is_truthy(left) else self.visit(node.right)
         if node.op == "&&":
             return self.visit(node.right) if _is_truthy(left) else left
-        raise NotImplementedError(f"Interp Error. Wrong Operator {node.op}")
+        else:
+            raise NotImplementedError(
+                f"Semantic Error. Logical operator '{node.op}' is not implemented. "
+                f"Operands: left = {node.left}, right = {node.right}."
+            )
+
 
     def visit(self, node: Unary):
         self.symbol_table[type(node).__name__] = {
@@ -443,7 +484,11 @@ class Interpreter(Visitor):  # This is a visitor
         elif node.op == "!":
             return not _is_truthy(expr)
         else:
-            raise NotImplementedError(f"Interp Error. Wrong Operator {node.op}")
+            expr_type = type(expr).__name__
+            raise NotImplementedError(
+                f"Semantic Error. Operator '{node.op}' is not implemented for operand of type '{expr_type}'. "
+                f"Expression: {node.expr}"
+            )
 
     def visit(self, node: Grouping):
         self.symbol_table[type(node).__name__] = {"type": Grouping, "scope": self.env.maps[0], "Expression": node.expr}
@@ -506,7 +551,7 @@ class Interpreter(Visitor):  # This is a visitor
         self.symbol_table["Call"] = {"type": Call, "scope": self.env.maps[0], "func": node.func, "Arguments": node.args}
         callee = self.visit(node.func)
         if not callable(callee):
-            self.error(node.func, f"Interp Error {self.ctxt.find_source(node.func)!r} is not callable")
+            self.error(node.func, f"Semantic Error {self.ctxt.find_source(node.func)!r} is not callable")
 
         if node.args is not None:
             args = [self.visit(arg) for arg in node.args]
@@ -535,7 +580,7 @@ class Interpreter(Visitor):  # This is a visitor
             obj.set(node.name, val)
             return val
         else:
-            self.error(node.obj, f"Interp Error{self.ctxt.find_source(node.obj)!r} is not an instance")
+            self.error(node.obj, f"Semantic Error{self.ctxt.find_source(node.obj)!r} is not an instance")
 
     def visit(self, node: Get):
         self.symbol_table["Get"] = {"type": Get, "scope": self.env.maps[0], "object": node.obj, "name": node.name}
@@ -546,7 +591,7 @@ class Interpreter(Visitor):  # This is a visitor
             except AttributeError as err:
                 self.error(node.obj, str(err))
         else:
-            self.error(node.obj, f"Interp Error{self.ctxt.find_source(node.obj)!r}  is not an instance")
+            self.error(node.obj, f"Semantic Error{self.ctxt.find_source(node.obj)!r}  is not an instance")
 
     def visit(self, node: This):
         return self.env["this"]
@@ -557,6 +602,6 @@ class Interpreter(Visitor):  # This is a visitor
         this = self.env.maps[distance - 1]["this"]
         method = sclass.find_method(node.name)
         if not method:
-            self.error(node.object, f"Interp Error. Not defined property {node.name!r}")
+            self.error(node.object, f"Semantic Error. Not defined property {node.name!r}")
         self.symbol_table["Super"] = {"type": Super, "scope": self.env.maps[0], "name": node.name}
         return method.bind(this)

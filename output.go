@@ -12,7 +12,7 @@ func main() {
 	juanito := "1234"
 	fmt.Println(saludar(juanito))
 	a := 112
-	b := 1342
+	b := 456
 	e := 4324
 	t := 5435
 	c := a + b + e + t
