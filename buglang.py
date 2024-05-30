@@ -1,4 +1,5 @@
 import webbrowser
+import subprocess
 
 import click
 from rich.console import Console
@@ -8,6 +9,7 @@ from rich.table import Table
 from tabulate import tabulate
 
 from bug_lang.context import Context
+from bug_lang.dot_gen import *
 
 
 # Define the command-line interface using Click decorators
@@ -52,9 +54,16 @@ def main(input_file, lex, ast, dot, sym, execute, errors):
         console.print(ast_syntax)
 
     if dot:
-        console.print("\n\n[bold cyan]DOT LANGUAGE[/bold cyan]\n")
-        dot = DotRender.render(ctxt.ast)  # render
-        console.print(dot)
+        console.print("\n\n[bold cyan]GENERATING DOT LANGUAGE[/bold cyan]\n")
+        dot_generator = DotGenerator()
+        dot_generator.generate(ctxt.ast)
+        dot_output = dot_generator.to_dot()
+        #console.print(Syntax(dot_output, "dot", theme="ansi_dark"))
+        with open("ast.dot", "w") as dot_file:
+            dot_file.write(dot_output)
+        
+        subprocess.run(["dot", "-Tpng", "ast.dot","-o","ast.png"], check=True)
+        webbrowser.open("ast.png")
 
     # if sym:
     #     console.print("\n[bold yellow]Symbol Table[/bold yellow]\n")
